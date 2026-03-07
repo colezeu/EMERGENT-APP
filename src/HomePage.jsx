@@ -1,39 +1,12 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { ArrowRight, Sparkles, Shield, Ruler, LayoutGrid, Droplets } from "lucide-react";
-
-
-const features = [
-    {
-        icon: Ruler,
-        title: "Dimensiuni Personalizate",
-        description: "Configurați dimensiunile exacte pentru proiectul dumneavoastră"
-    },
-    {
-        icon: Sparkles,
-        title: "Vizualizare Instant",
-        description: "Vedeți cum va arăta produsul final în timp real"
-    },
-    {
-        icon: Shield,
-        title: "Calitate Certificată",
-        description: "Sticlă securizată și laminată conform standardelor europene"
-    }
-];
-
-const productCategories = [
-    {
-        id: "balustrade",
-        name: "Balustrade",
-        category: "Balustrade",
-        description: "Balustrade din sticlă pentru scări, balcoane și terase. Sticlă dreaptă sau pentru rampă.",
-        icon: Fence,
-        image_url: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800",
-        base_price_per_sqm: "150"
-    },
-    {
-        id: "cabine-dus",
-        name: "Cabine Duș",
+export default function HomePage() {
+  return (
+    <div style={{ padding: '20px', fontFamily: 'Arial' }}>
+      <h1>Glass Associates</h1>
+      <p>Site-ul funcționează!</p>
+      <a href="/configurator">Mergi la Configurator</a>
+    </div>
+  );
+}
         category: "Cabine",
         description: "Cabine și paravane pentru duș din sticlă securizată. Uși batante, culisante sau fixe.",
         icon: ShowerHead,
