@@ -1,40 +1,40 @@
 {
   "products": {
     "balustrade": {
-      "name": "Balustrade Sticlă",
+      "name": "Balustradă Sticlă",
       "basePrice": 50,
       "glassTypes": {
         "8mm": {
           "name": "Sticlă Laminată 8mm",
           "pricePerSqm": 150,
-          "description": "Sticlă laminată standard, ideală pentru interior"
+          "description": "Standard, ideală pentru interior"
         },
         "10mm": {
           "name": "Sticlă Securizată 10mm",
           "pricePerSqm": 200,
-          "description": "Rezistență sporită pentru exterior"
+          "description": "Rezistență sporită, exterior"
         },
         "extraclar": {
           "name": "Sticlă Extra Clară",
           "pricePerSqm": 280,
-          "description": "Transparență maximă, fără reflexii verzi"
+          "description": "Transparență maximă, premium"
         }
       },
       "mountingTypes": {
         "clips": {
           "name": "Cleme Inox",
           "pricePerMeter": 50,
-          "description": "Montare discretă cu cleme din inox"
+          "description": "Montare discretă, modernă"
         },
         "profile": {
           "name": "Profile Aluminiu",
           "pricePerMeter": 80,
-          "description": "Profile moderne, finisaj anodizat"
+          "description": "Finisaj anodizat, elegant"
         },
         "embedded": {
           "name": "Canal Integrat",
           "pricePerMeter": 120,
-          "description": "Montare în podea, aspect minimalist"
+          "description": "Montaj în podea, minimalist"
         }
       },
       "options": {
@@ -46,42 +46,10 @@
         "led": {
           "name": "Iluminare LED",
           "price": 150,
-          "description": "Benzi LED integrate în bază"
-        }
-      }
-    },
-    "shower": {
-      "name": "Cabine Duș",
-      "basePrice": 100,
-      "glassTypes": {
-        "8mm": {
-          "name": "Sticlă Securizată 8mm",
-          "pricePerSqm": 130
-        },
-        "10mm": {
-          "name": "Sticlă Securizată 10mm",
-          "pricePerSqm": 170
-        }
-      },
-      "doorTypes": {
-        "swing": {
-          "name": "Ușă Batantă",
-          "price": 200
-        },
-        "sliding": {
-          "name": "Ușă Culisantă",
-          "price": 350
-        },
-        "fixed": {
-          "name": "Paravan Fix",
-          "price": 0
+          "description": "Benzi LED integrate"
         }
       }
     }
   },
-  "general": {
-    "vatRate": 0.19,
-    "transportPerKm": 2.5,
-    "installationPerHour": 50
-  }
+  "vatRate": 0.19
 }
