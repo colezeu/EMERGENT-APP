@@ -9,6 +9,7 @@ function App() {
         <Route path="/" element={<HomePage />} />
         <Route path="/configurator" element={<HomePage />} />
         <Route path="/configurator/balustrade" element={<BalustradeConfiguratorPage />} />
+        <Route path="/configurator/cabine-dus" element={<ShowerConfiguratorPage />} /> 
         <Route path="/configurator/cabine-dus" element={<HomePage />} />
       </Routes>
     </BrowserRouter>
@@ -16,3 +17,4 @@ function App() {
 }
 
 export default App
+
