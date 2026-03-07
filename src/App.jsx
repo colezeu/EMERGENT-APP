@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import HomePage from './HomePage.jsx'
-import BalustradeConfiguratorPage from './BalustradeConfiguratorPage.jsx'  // scoate //
+import BalustradeConfiguratorPage from './BalustradeConfiguratorPage.jsx'
 
 function App() {
   return (
@@ -16,4 +16,3 @@ function App() {
 }
 
 export default App
-
