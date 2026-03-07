@@ -4,50 +4,18 @@
       "name": "Balustradă Sticlă",
       "basePrice": 50,
       "glassTypes": {
-        "8mm": {
-          "name": "Sticlă Laminată 8mm",
-          "pricePerSqm": 150,
-          "description": "Standard, ideală pentru interior"
-        },
-        "10mm": {
-          "name": "Sticlă Securizată 10mm",
-          "pricePerSqm": 200,
-          "description": "Rezistență sporită, exterior"
-        },
-        "extraclar": {
-          "name": "Sticlă Extra Clară",
-          "pricePerSqm": 280,
-          "description": "Transparență maximă, premium"
-        }
+        "8mm": { "name": "Sticlă Laminată 8mm", "pricePerSqm": 150 },
+        "10mm": { "name": "Sticlă Securizată 10mm", "pricePerSqm": 200 },
+        "extraclar": { "name": "Sticlă Extra Clară", "pricePerSqm": 280 }
       },
       "mountingTypes": {
-        "clips": {
-          "name": "Cleme Inox",
-          "pricePerMeter": 50,
-          "description": "Montare discretă, modernă"
-        },
-        "profile": {
-          "name": "Profile Aluminiu",
-          "pricePerMeter": 80,
-          "description": "Finisaj anodizat, elegant"
-        },
-        "embedded": {
-          "name": "Canal Integrat",
-          "pricePerMeter": 120,
-          "description": "Montaj în podea, minimalist"
-        }
+        "clips": { "name": "Cleme Inox", "pricePerMeter": 50 },
+        "profile": { "name": "Profile Aluminiu", "pricePerMeter": 80 },
+        "embedded": { "name": "Canal Integrat", "pricePerMeter": 120 }
       },
       "options": {
-        "handrail": {
-          "name": "Mână Curentă",
-          "pricePerMeter": 45,
-          "description": "Lemn sau inox"
-        },
-        "led": {
-          "name": "Iluminare LED",
-          "price": 150,
-          "description": "Benzi LED integrate"
-        }
+        "handrail": { "name": "Mână Curentă", "pricePerMeter": 45 },
+        "led": { "name": "Iluminare LED", "price": 150 }
       }
     }
   },
