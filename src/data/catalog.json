@@ -1,0 +1,87 @@
+{
+  "products": {
+    "balustrade": {
+      "name": "Balustrade Sticlă",
+      "basePrice": 50,
+      "glassTypes": {
+        "8mm": {
+          "name": "Sticlă Laminată 8mm",
+          "pricePerSqm": 150,
+          "description": "Sticlă laminată standard, ideală pentru interior"
+        },
+        "10mm": {
+          "name": "Sticlă Securizată 10mm",
+          "pricePerSqm": 200,
+          "description": "Rezistență sporită pentru exterior"
+        },
+        "extraclar": {
+          "name": "Sticlă Extra Clară",
+          "pricePerSqm": 280,
+          "description": "Transparență maximă, fără reflexii verzi"
+        }
+      },
+      "mountingTypes": {
+        "clips": {
+          "name": "Cleme Inox",
+          "pricePerMeter": 50,
+          "description": "Montare discretă cu cleme din inox"
+        },
+        "profile": {
+          "name": "Profile Aluminiu",
+          "pricePerMeter": 80,
+          "description": "Profile moderne, finisaj anodizat"
+        },
+        "embedded": {
+          "name": "Canal Integrat",
+          "pricePerMeter": 120,
+          "description": "Montare în podea, aspect minimalist"
+        }
+      },
+      "options": {
+        "handrail": {
+          "name": "Mână Curentă",
+          "pricePerMeter": 45,
+          "description": "Lemn sau inox"
+        },
+        "led": {
+          "name": "Iluminare LED",
+          "price": 150,
+          "description": "Benzi LED integrate în bază"
+        }
+      }
+    },
+    "shower": {
+      "name": "Cabine Duș",
+      "basePrice": 100,
+      "glassTypes": {
+        "8mm": {
+          "name": "Sticlă Securizată 8mm",
+          "pricePerSqm": 130
+        },
+        "10mm": {
+          "name": "Sticlă Securizată 10mm",
+          "pricePerSqm": 170
+        }
+      },
+      "doorTypes": {
+        "swing": {
+          "name": "Ușă Batantă",
+          "price": 200
+        },
+        "sliding": {
+          "name": "Ușă Culisantă",
+          "price": 350
+        },
+        "fixed": {
+          "name": "Paravan Fix",
+          "price": 0
+        }
+      }
+    }
+  },
+  "general": {
+    "vatRate": 0.19,
+    "transportPerKm": 2.5,
+    "installationPerHour": 50
+  }
+}
