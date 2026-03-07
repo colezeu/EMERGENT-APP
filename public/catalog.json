@@ -18,6 +18,38 @@ export default {
         "led": { name: "Iluminare LED", price: 150 }
       }
     }
+{
+  "products": {
+    "balustrade": {
+      "...": "..."
+    },
+    "cabine-dus": {
+      "name": "Cabina de Duș",
+      "basePrice": 80,
+      "glassTypes": {
+        "8mm": { "name": "Sticlă Securizată 8mm", "pricePerSqm": 130 },
+        "10mm": { "name": "Sticlă Securizată 10mm", "pricePerSqm": 170 }
+      },
+      "doorTypes": {
+        "swing": { "name": "Ușă Batantă", "price": 200 },
+        "sliding": { "name": "Ușă Culisantă", "price": 350 },
+        "fixed": { "name": "Paravan Fix (fără ușă)", "price": 0 }
+      },
+      "treatments": {
+        "clear": { "name": "Sticlă Transparentă", "pricePerSqm": 0 },
+        "frosted": { "name": "Sticlă Sablată (opacă)", "pricePerSqm": 25 },
+        "nano": { "name": "Tratament Anti-Calcar Nano", "pricePerSqm": 35 }
+      },
+      "options": {
+        "towelBar": { "name": "Port Prosop Integrat", "price": 45 },
+        "seat": { "name": "Scaun Rabatabil", "price": 85 },
+        "led": { "name": "Iluminare LED", "price": 120 }
+      }
+    }
+  },
+  "vatRate": 0.19
+}
+
   },
   vatRate: 0.19
 };
