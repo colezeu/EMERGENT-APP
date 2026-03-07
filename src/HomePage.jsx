@@ -1,3 +1,6 @@
+
+import { Link } from "react-router-dom";
+import { ArrowRight, Sparkles, Shield, Ruler } from "lucide-react";
 import { Ruler, Sparkles, Shield, ArrowRight } from "lucide-react";
 
 const features = [
