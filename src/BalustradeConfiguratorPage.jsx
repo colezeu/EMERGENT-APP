@@ -199,4 +199,74 @@ export default function BalustradeConfiguratorPage() {
                 </label>
 
                 <label className={`flex items-center justify-between p-4 border-2 rounded-xl cursor-pointer ${
-                  includeLed ? "border-green-500 bg-green-50" : "border-*
+                  includeLed ? "border-green-500 bg-green-50" : "border-slate-200"
+                }`}>
+                  <div className="flex items-center gap-3">
+                    <input 
+                      type="checkbox"
+                      checked={includeLed}
+                      onChange={(e) => setIncludeLed(e.target.checked)}
+                      className="w-5 h-5"
+                    />
+                    <span className="font-medium">{productData.options.led.name}</span>
+                  </div>
+                  <span className="text-slate-600">{productData.options.led.price}€</span>
+                </label>
+              </div>
+            </div>
+
+          </div>
+
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl shadow-lg p-8 sticky top-8 border-t-4 border-blue-500">
+              <h3 className="text-lg font-bold mb-6">Rezumat</h3>
+              
+              {!showResult ? (
+                <div className="text-center py-8">
+                  <p className="text-slate-500 mb-6">Completează dimensiunile</p>
+                  <button
+                    onClick={calculatePrice}
+                    disabled={!isFormValid || calculating}
+                    className="w-full bg-blue-600 text-white py-4 rounded-xl font-bold disabled:bg-slate-300 transition-all"
+                  >
+                    {calculating ? "Se calculează..." : "Calculează Preț"}
+                  </button>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="space-y-2 text-sm border-b border-slate-200 pb-4">
+                    <div className="flex justify-between"><span>Suprafață:</span><span>{quote.area} m²</span></div>
+                    <div className="flex justify-between"><span>Sticlă:</span><span>{quote.glassPrice}€</span></div>
+                    <div className="flex justify-between"><span>Montare:</span><span>{quote.mountingPrice}€</span></div>
+                    {quote.handrailPrice > 0 && (
+                      <div className="flex justify-between text-green-700"><span>Mână curentă:</span><span>+{quote.handrailPrice}€</span></div>
+                    )}
+                    {quote.ledPrice > 0 && (
+                      <div className="flex justify-between text-green-700"><span>LED:</span><span>+{quote.ledPrice}€</span></div>
+                    )}
+                    <div className="flex justify-between pt-2 border-t"><span>Subtotal:</span><span>{quote.subtotal}€</span></div>
+                    <div className="flex justify-between text-slate-500"><span>TVA:</span><span>{quote.vat}€</span></div>
+                  </div>
+                  
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="text-lg font-bold">Total:</span>
+                    <span className="text-3xl font-bold text-blue-600">{quote.total}€</span>
+                  </div>
+
+                  <button className="w-full bg-green-600 text-white py-4 rounded-xl font-bold hover:bg-green-700 transition-all flex items-center justify-center gap-2">
+                    <Check className="w-5 h-5" /> Solicită Ofertă
+                  </button>
+                  
+                  <button onClick={() => setShowResult(false)} className="w-full text-slate-500 py-2">
+                    ← Modifică
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  );
+}
