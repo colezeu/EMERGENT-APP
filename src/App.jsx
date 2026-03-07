@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import HomePage from './HomePage.jsx'
 import BalustradeConfiguratorPage from './BalustradeConfiguratorPage.jsx'
-
+import ShowerConfiguratorPage from './ShowerConfiguratorPage.jsx'
 function App() {
   return (
     <BrowserRouter>
@@ -17,4 +17,5 @@ function App() {
 }
 
 export default App
+
 
