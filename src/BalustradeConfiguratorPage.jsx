@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Loader2, Ruler, Check } from "lucide-react";
-import catalog from "../data/catalog.json";
+import catalog from "../data/catalog.js";
 
 export default function BalustradeConfiguratorPage() {
   const productData = catalog.products.balustrade;
