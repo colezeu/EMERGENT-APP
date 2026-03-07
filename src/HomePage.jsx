@@ -144,7 +144,7 @@ export default function HomePage() {
       {/* Footer */}
       <footer className="py-8 px-8 border-t border-slate-200">
         <div className="max-w-6xl mx-auto text-center text-slate-500 text-sm">
-          © 2024 Glass Associates. Toate drepturile rezervate.
+          © 2026 Glass Associates. Toate drepturile rezervate.
         </div>
       </footer>
     </div>
