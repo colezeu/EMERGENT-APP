@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { ArrowRight, Ruler, Sparkles, Shield, Check } from "lucide-react";
+import { ArrowRight, Ruler, Sparkles, Shield } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -100,7 +100,7 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Cabine Duș */}
+            {/* Cabine Duș - LINK CORECTAT AICI */}
             <div className="group bg-white rounded-2xl overflow-hidden shadow-lg border border-slate-100 hover:shadow-xl transition-shadow">
               <div className="h-64 bg-slate-200 relative overflow-hidden">
                 <img 
@@ -117,7 +117,7 @@ export default function HomePage() {
                 <p className="text-slate-600 mb-4 text-sm">Cabine și paravane pentru duș din sticlă securizată. Uși batante sau culisante.</p>
                 <div className="flex items-center justify-between">
                   <span className="text-slate-500 text-sm">de la <span className="text-slate-900 font-bold">120€/m²</span></span>
-                  <Link to="/configurator" className="text-blue-600 font-semibold hover:underline flex items-center gap-1">
+                  <Link to="/configurator/cabine-dus" className="text-blue-600 font-semibold hover:underline flex items-center gap-1">
                     Configurează <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
