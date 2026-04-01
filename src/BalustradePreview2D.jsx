@@ -1,4 +1,4 @@
-cat << 'EOF'
+
 export default function BalustradePreview2D({ dimensions, glassType, mountingType, includeHandrail, includeLed }) {
   const length = parseFloat(dimensions.length) || 3;
   const height = parseFloat(dimensions.height) || 0.9;
@@ -156,7 +156,9 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
             </text>
           </>
         )}
+
       </svg>
+
       {/* Legenda */}
       <div style={{ display: "flex", gap: 14, justifyContent: "center", marginTop: 8, flexWrap: "wrap" }}>
         {[
