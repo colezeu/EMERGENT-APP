@@ -8,7 +8,7 @@ const FALLBACK = { name:"Balustrade", basePrice:50, glassShapes:{ dreapta:{name:
 export default function BalustradeConfiguratorPage() {
   const [product, setProduct] = useState(null);
   const [vatRate, setVatRate] = useState(0.19);
-  const [dims, setDims] = useState({ length:"", height:"1.1" });
+  const [dims, setDims] = useState({ length:"", height:"0.9" });
   const [glassShape, setGlassShape] = useState("dreapta");
   const [hardware, setHardware] = useState("butoni");
   const [profileShape, setProfileShape] = useState("U");
