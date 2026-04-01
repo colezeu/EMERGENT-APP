@@ -67,24 +67,30 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
 
         {/* ── FERONERIE ── */}
 
-        {/* BUTONI INOX */}
-        {mountingType === "clips" && buttonY.map((by, ri) =>
-          Array.from({ length: buttonCols }, (_, ci) => {
-            const bx = x0 + (ci / (buttonCols - 1)) * gW;
-            return (
-              <g key={`b-${ri}-${ci}`}>
-                {/* disc exterior */}
-                <circle cx={bx} cy={by} r={5.5}
-                  fill="rgba(200,169,110,0.15)"
-                  stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
-                {/* disc interior */}
-                <circle cx={bx} cy={by} r={2.5}
-                  fill="rgba(200,169,110,0.6)" />
-                {/* stift spre fusta */}
-                {ri === buttonRows - 1 && SKIRT > 0 && (
-                  <line x1={bx} y1={by + 5.5} x2={bx} y2={skirtY}
-                    stroke="rgba(200,169,110,0.25)" strokeWidth="0.8" strokeDasharray="2,2" />
-                )}
+       {/* BUTONI INOX */}
+{mountingType === "clips" && (
+  <>
+    {/* pereche stanga */}
+    <circle cx={x0 + gW * 0.15} cy={skirtY + sH * 0.3} r={5.5}
+      fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
+    <circle cx={x0 + gW * 0.15} cy={skirtY + sH * 0.3} r={2.5}
+      fill="rgba(200,169,110,0.6)" />
+    <circle cx={x0 + gW * 0.15} cy={skirtY + sH * 0.75} r={5.5}
+      fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
+    <circle cx={x0 + gW * 0.15} cy={skirtY + sH * 0.75} r={2.5}
+      fill="rgba(200,169,110,0.6)" />
+
+    {/* pereche dreapta */}
+    <circle cx={x0 + gW * 0.85} cy={skirtY + sH * 0.3} r={5.5}
+      fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
+    <circle cx={x0 + gW * 0.85} cy={skirtY + sH * 0.3} r={2.5}
+      fill="rgba(200,169,110,0.6)" />
+    <circle cx={x0 + gW * 0.85} cy={skirtY + sH * 0.75} r={5.5}
+      fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
+    <circle cx={x0 + gW * 0.85} cy={skirtY + sH * 0.75} r={2.5}
+      fill="rgba(200,169,110,0.6)" />
+  </>
+)}
               </g>
             );
           })
