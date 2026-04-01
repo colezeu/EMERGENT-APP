@@ -179,6 +179,3 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
     </div>
   );
 }
-EOF
-Output
-}
