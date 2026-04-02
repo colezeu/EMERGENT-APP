@@ -18,6 +18,11 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
   const glassOpacity = glassType === "extraclar" ? 0.16 : glassType === "10mm" ? 0.2 : 0.25;
   const glassColor = `rgba(180,220,255,${glassOpacity})`;
 
+  const montantCount = Math.max(2, Math.round(length * 1.2));
+  const montantY = height > 0.6
+    ? [y0 + gH * 0.28, y0 + gH * 0.72]
+    : [y0 + gH * 0.5];
+
   return (
     <div style={{ width: "100%", background: "rgba(255,255,255,0.02)", borderRadius: 16, padding: "16px 12px", border: "1px solid rgba(255,255,255,0.07)" }}>
       <div style={{ fontSize: "0.72rem", color: "rgba(240,237,232,0.35)", marginBottom: 10, textAlign: "center", letterSpacing: "0.08em", textTransform: "uppercase" }}>
@@ -53,7 +58,7 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
         <rect x={x0 + 6} y={y0 + 6} width={9} height={gH * 0.38}
           fill="rgba(255,255,255,0.055)" rx="4" />
 
-        {/* BUTONI INOX - 2 perechi la nivelul fustei */}
+        {/* BUTONI INOX - 2 perechi pe fusta */}
         {mountingType === "clips" && (
           <>
             <circle cx={x0 + gW * 0.15} cy={skirtY + sH * 0.3} r={5.5}
@@ -73,6 +78,22 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
             <circle cx={x0 + gW * 0.85} cy={skirtY + sH * 0.75} r={2.5}
               fill="rgba(200,169,110,0.6)" />
           </>
+        )}
+
+        {/* MINI-MONTANTI - discuri pe suprafata sticlei, 2 randuri */}
+        {mountingType === "mini-montanti" && montantY.map((by, ri) =>
+          Array.from({ length: montantCount }, (_, ci) => {
+            const bx = x0 + (ci / (montantCount - 1)) * gW;
+            return (
+              <g key={`m-${ri}-${ci}`}>
+                <circle cx={bx} cy={by} r={5.5}
+                  fill="rgba(200,169,110,0.15)"
+                  stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
+                <circle cx={bx} cy={by} r={2.5}
+                  fill="rgba(200,169,110,0.6)" />
+              </g>
+            );
+          })
         )}
 
         {/* PROFILE U/V/L */}
@@ -144,12 +165,13 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
       <div style={{ display: "flex", gap: 14, justifyContent: "center", marginTop: 8, flexWrap: "wrap" }}>
         {[
           { color: "rgba(180,220,255,0.6)", label: "Sticlă" },
-          mountingType === "clips"    && { color: "rgba(200,169,110,0.75)", label: "Butoni Inox" },
-          mountingType === "profile"  && { color: "rgba(200,169,110,0.7)",  label: "Profil" },
-          mountingType === "embedded" && { color: "rgba(200,169,110,0.6)",  label: "Canal Integrat" },
-          SKIRT > 0      && { color: "rgba(180,220,255,0.25)", label: "Fustă 350mm" },
-          includeHandrail && { color: "rgba(200,169,110,0.9)", label: "Mână curentă" },
-          includeLed      && { color: "rgba(255,220,120,0.8)", label: "LED" },
+          mountingType === "clips"         && { color: "rgba(200,169,110,0.75)", label: "Butoni Inox" },
+          mountingType === "mini-montanti" && { color: "rgba(200,169,110,0.75)", label: "Mini-Montanți" },
+          mountingType === "profile"       && { color: "rgba(200,169,110,0.7)",  label: "Profil" },
+          mountingType === "embedded"      && { color: "rgba(200,169,110,0.6)",  label: "Canal Integrat" },
+          SKIRT > 0       && { color: "rgba(180,220,255,0.25)", label: "Fustă 350mm" },
+          includeHandrail && { color: "rgba(200,169,110,0.9)",  label: "Mână curentă" },
+          includeLed      && { color: "rgba(255,220,120,0.8)",  label: "LED" },
         ].filter(Boolean).map((item, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: 5 }}>
             <div style={{ width: 10, height: 10, borderRadius: 2, background: item.color }} />
