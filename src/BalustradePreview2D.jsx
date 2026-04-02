@@ -80,15 +80,15 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
           </>
         )}
 
-        {/* MINI-MONTANTI - 2 bare verticale la capete, baza sticlei */}
+        {/* MINI-MONTANTI - 2 bare la capete, jumatate in sticla jumatate in pardoseala */}
 {mountingType === "mini-montanti" && (
   <>
-    <rect x={x0 + 8} y={y0 + gH * 0.4} width={10} height={gH * 0.6}
-      fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="2" />
-    <rect x={x0 + gW - 18} y={y0 + gH * 0.4} width={10} height={gH * 0.6}
-      fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="2" />
+    <rect x={x0 + 10} y={y0 + gH * 0.7} width={6} height={gH * 0.3 + sH * 0.5 + 14}
+      fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="1.5" />
+    <rect x={x0 + gW - 16} y={y0 + gH * 0.7} width={6} height={gH * 0.3 + sH * 0.5 + 14}
+      fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="1.5" />
   </>
-        )}
+)}
 
         {/* PROFILE U/V/L */}
         {mountingType === "profile" && (
