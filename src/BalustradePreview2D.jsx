@@ -80,20 +80,14 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
           </>
         )}
 
-        {/* MINI-MONTANTI - discuri pe suprafata sticlei, 2 randuri */}
-        {mountingType === "mini-montanti" && montantY.map((by, ri) =>
-          Array.from({ length: montantCount }, (_, ci) => {
-            const bx = x0 + (ci / (montantCount - 1)) * gW;
-            return (
-              <g key={`m-${ri}-${ci}`}>
-                <circle cx={bx} cy={by} r={5.5}
-                  fill="rgba(200,169,110,0.15)"
-                  stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
-                <circle cx={bx} cy={by} r={2.5}
-                  fill="rgba(200,169,110,0.6)" />
-              </g>
-            );
-          })
+        {/* MINI-MONTANTI - 2 bare verticale la capete, baza sticlei */}
+{mountingType === "mini-montanti" && (
+  <>
+    <rect x={x0 + 8} y={y0 + gH * 0.4} width={10} height={gH * 0.6}
+      fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="2" />
+    <rect x={x0 + gW - 18} y={y0 + gH * 0.4} width={10} height={gH * 0.6}
+      fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="2" />
+  </>
         )}
 
         {/* PROFILE U/V/L */}
