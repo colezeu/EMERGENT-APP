@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import HomePage from './HomePage.jsx'
+import AdminPage from './AdminPage.jsx'
 import BalustradeConfiguratorPage from './BalustradeConfiguratorPage.jsx'
 import ShowerConfiguratorPage from './ShowerConfiguratorPage.jsx'
 import TerraceConfiguratorPage from './TerraceConfiguratorPage.jsx'
