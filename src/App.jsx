@@ -13,6 +13,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/admin" element={<AdminPage />} />
         <Route path="/"                              element={<HomePage />} />
         <Route path="/configurator/balustrade"       element={<BalustradeConfiguratorPage />} />
         <Route path="/configurator/cabine-dus"       element={<ShowerConfiguratorPage />} />
