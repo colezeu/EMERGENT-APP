@@ -111,7 +111,7 @@ export default function BalustradeConfiguratorPage() {
 
         <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
           <PreviewBox>
-            <BalustradePreview2D dimensions={dims} glassType={glassType} mountingType={
+            <BalustradePreview3D dimensions={dims} glassType={glassType} mountingType={
               hardware==="butoni" ? "clips" : hardware==="mini-montanti" ? "mini-montanti" : hardware==="profil-pardoseala" ? "embedded" : "profile"
             } includeHandrail={handrail !== "none"} includeLed={includeLed} />
           </PreviewBox>
