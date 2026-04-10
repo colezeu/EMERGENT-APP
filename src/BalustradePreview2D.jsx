@@ -1,183 +1,189 @@
-import { useEffect, useRef } from "react";
-
 export default function BalustradePreview3D({ dimensions, glassType, mountingType, includeHandrail, includeLed }) {
-  const mountRef = useRef(null);
-
   const length = parseFloat(dimensions.length) || 3;
   const height = parseFloat(dimensions.height) || 0.9;
   const hasSkirt = mountingType === "clips";
   const skirt = hasSkirt ? 0.35 : 0;
   const panelCount = Math.ceil(length / 1.1);
 
-  useEffect(() => {
-    const el = mountRef.current;
-    if (!el) return;
+  // Izometric projection
+  const W = 340, H = 240;
+  const scale = Math.min(120 / length, 80 / (height + skirt + 0.3));
+  const isoX = (x, z) => W * 0.18 + (x + z) * scale * 0.7;
+  const isoY = (x, y, z) => H * 0.75 - y * scale - (x - z) * scale * 0.35;
 
-    let THREE;
-    let renderer;
+  const glassOpacity = glassType === "extraclar" ? 0.18 : glassType === "10mm" ? 0.24 : 0.3;
+  const glassStroke = "rgba(180,220,255,0.6)";
+  const glassFill = `rgba(180,220,255,${glassOpacity})`;
+  const inox = "rgba(200,169,110,0.85)";
+  const inoxDark = "rgba(160,130,80,0.9)";
 
-    import("three").then(module => {
-      THREE = module;
-      const W = el.clientWidth, H = 260;
+  const totalH = height + skirt;
 
-      const scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x0f1117);
+  // Helper: draw iso face (parallelogram)
+  const isoFace = (x0, y0, z0, dx, dy, dz, fill, stroke = "none", sw = 0) => {
+    const pts = [
+      [isoX(x0, z0),          isoY(x0, y0, z0)],
+      [isoX(x0+dx, z0+dz),    isoY(x0+dx, y0, z0+dz)],
+      [isoX(x0+dx, z0+dz),    isoY(x0+dx, y0+dy, z0+dz)],
+      [isoX(x0, z0),          isoY(x0, y0+dy, z0)],
+    ];
+    return `M${pts[0]} L${pts[1]} L${pts[2]} L${pts[3]} Z`;
+  };
 
-      const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
-      camera.position.set(length * 0.9, (height + skirt) * 1.8, length * 1.4);
-      camera.lookAt(length / 2, (height + skirt) / 2, 0);
+  const panels = Array.from({ length: panelCount }, (_, i) => i);
+  const pW = length / panelCount;
 
-      renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(W, H);
-      renderer.setPixelRatio(window.devicePixelRatio);
-      el.innerHTML = "";
-      el.appendChild(renderer.domElement);
+  return (
+    <div style={{ width: "100%", background: "rgba(255,255,255,0.02)", borderRadius: 16, padding: "12px", border: "1px solid rgba(255,255,255,0.07)" }}>
+      <div style={{ fontSize: "0.72rem", color: "rgba(240,237,232,0.35)", marginBottom: 6, textAlign: "center", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+        Previzualizare 3D · {panelCount} {panelCount === 1 ? "panou" : "panouri"}
+      </div>
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: "block" }}>
 
-      const ambient = new THREE.AmbientLight(0xffffff, 0.6);
-      scene.add(ambient);
-      const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
-      dirLight.position.set(5, 8, 5);
-      scene.add(dirLight);
-      const fillLight = new THREE.DirectionalLight(0xc8a96e, 0.3);
-      fillLight.position.set(-5, 2, -3);
-      scene.add(fillLight);
+        {/* Pardoseala */}
+        <path d={isoFace(0, -0.04, -0.15, length, 0.04, 0, "rgba(30,33,44,0.9)", "rgba(200,169,110,0.2)", 1)}
+          fill="rgba(30,33,44,0.9)" stroke="rgba(200,169,110,0.2)" strokeWidth="1" />
+        <path d={isoFace(0, -0.04, -0.15, length, 0.04, 0.15, "rgba(25,28,38,0.9)")}
+          fill="rgba(25,28,38,0.9)" stroke="rgba(200,169,110,0.15)" strokeWidth="0.5" />
 
-      // Pardoseala
-      const floor = new THREE.Mesh(
-        new THREE.BoxGeometry(length + 0.4, 0.04, 0.6),
-        new THREE.MeshStandardMaterial({ color: 0x1a1d26, roughness: 0.8 })
-      );
-      floor.position.set(length / 2, -0.02, 0);
-      scene.add(floor);
+        {/* Panouri sticla */}
+        {panels.map(i => (
+          <g key={i}>
+            {/* Fata frontala */}
+            <path
+              d={isoFace(i * pW, 0, 0, pW - 0.02, totalH, 0, glassFill, glassStroke, 1)}
+              fill={glassFill} stroke={glassStroke} strokeWidth="1"
+            />
+            {/* Fata laterala (grosime) */}
+            <path
+              d={isoFace(i * pW + pW - 0.02, 0, 0, 0.01, totalH, 0, "rgba(140,190,220,0.15)")}
+              fill="rgba(140,190,220,0.15)" stroke="rgba(180,220,255,0.3)" strokeWidth="0.5"
+            />
+            {/* Sus */}
+            <path
+              d={isoFace(i * pW, totalH, 0, pW - 0.02, 0, 0.01, "rgba(200,230,255,0.12)")}
+              fill="rgba(200,230,255,0.12)" stroke="rgba(180,220,255,0.4)" strokeWidth="0.5"
+            />
+            {/* Rama sus */}
+            <path
+              d={isoFace(i * pW, totalH - 0.01, 0, pW - 0.02, 0.01, 0, "rgba(150,190,210,0.5)")}
+              fill="rgba(150,190,210,0.5)" stroke="rgba(180,220,255,0.5)" strokeWidth="0.5"
+            />
+            {/* Separator panouri */}
+            {i > 0 && (
+              <line
+                x1={isoX(i * pW, 0)} y1={isoY(i * pW, 0, 0)}
+                x2={isoX(i * pW, 0)} y2={isoY(i * pW, totalH, 0)}
+                stroke="rgba(180,220,255,0.2)" strokeWidth="1" strokeDasharray="3,2"
+              />
+            )}
+          </g>
+        ))}
 
-      const glassColor = glassType === "extraclar" ? 0xddf0ff : glassType === "10mm" ? 0xc8e8ff : 0xb8deff;
-      const glassMat = new THREE.MeshPhysicalMaterial({
-        color: glassColor, transparent: true, opacity: 0.25,
-        roughness: 0, metalness: 0, side: THREE.DoubleSide,
-      });
-      const edgeMat = new THREE.MeshStandardMaterial({ color: 0x9ab8cc, roughness: 0.3, metalness: 0.5 });
-      const inoxMat = new THREE.MeshStandardMaterial({ color: 0xc8a96e, roughness: 0.2, metalness: 0.9 });
-
-      // Panouri sticla
-      for (let i = 0; i < panelCount; i++) {
-        const pW = length / panelCount;
-        const totalH = height + skirt;
-        const glass = new THREE.Mesh(new THREE.BoxGeometry(pW - 0.02, totalH, 0.01), glassMat);
-        glass.position.set(i * pW + pW / 2, totalH / 2, 0);
-        scene.add(glass);
-
-        // Rama
-        [
-          { w: pW, h: 0.012, d: 0.015, x: i * pW + pW / 2, y: totalH },
-          { w: pW, h: 0.012, d: 0.015, x: i * pW + pW / 2, y: skirt },
-          { w: 0.012, h: totalH, d: 0.015, x: i * pW,       y: totalH / 2 },
-          { w: 0.012, h: totalH, d: 0.015, x: i * pW + pW,  y: totalH / 2 },
-        ].forEach(e => {
-          const m = new THREE.Mesh(new THREE.BoxGeometry(e.w, e.h, e.d), edgeMat);
-          m.position.set(e.x, e.y, 0);
-          scene.add(m);
-        });
-
-        // Separator panouri
-        if (i > 0) {
-          const sep = new THREE.Mesh(new THREE.BoxGeometry(0.015, totalH, 0.02),
-            new THREE.MeshStandardMaterial({ color: 0x778899, roughness: 0.4, metalness: 0.6 }));
-          sep.position.set(i * pW, totalH / 2, 0);
-          scene.add(sep);
-        }
-      }
-
-      // Butoni inox
-      if (mountingType === "clips") {
-        for (let i = 0; i < panelCount; i++) {
-          const pW = length / panelCount;
-          [
+        {/* BUTONI INOX */}
+        {mountingType === "clips" && panels.map(i => {
+          const positions = [
             { x: i * pW + pW * 0.18, y: skirt * 0.28 },
             { x: i * pW + pW * 0.18, y: skirt * 0.72 },
             { x: i * pW + pW * 0.82, y: skirt * 0.28 },
             { x: i * pW + pW * 0.82, y: skirt * 0.72 },
-          ].forEach(pos => {
-            const btn = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.02, 16), inoxMat);
-            btn.rotation.x = Math.PI / 2;
-            btn.position.set(pos.x, pos.y, 0.012);
-            scene.add(btn);
-          });
-        }
-      }
+          ];
+          return positions.map((pos, j) => (
+            <g key={`b-${i}-${j}`}>
+              <circle
+                cx={isoX(pos.x, 0.015)} cy={isoY(pos.x, pos.y, 0.015)} r={4}
+                fill="rgba(200,169,110,0.2)" stroke={inox} strokeWidth="1.2"
+              />
+              <circle
+                cx={isoX(pos.x, 0.015)} cy={isoY(pos.x, pos.y, 0.015)} r={1.8}
+                fill={inox}
+              />
+            </g>
+          ));
+        })}
 
-      // Mini-montanti
-      if (mountingType === "mini-montanti") {
-        [0.08, length - 0.08].forEach(x => {
-          const m = new THREE.Mesh(new THREE.BoxGeometry(0.025, height * 0.55, 0.018), inoxMat);
-          m.position.set(x, skirt + height * 0.23 + height * 0.55 / 2, 0);
-          scene.add(m);
-        });
-      }
+        {/* MINI-MONTANTI */}
+        {mountingType === "mini-montanti" && [0.08, length - 0.08].map((x, i) => (
+          <g key={i}>
+            <path
+              d={isoFace(x - 0.013, skirt + height * 0.23, 0, 0.025, height * 0.55, 0, inox)}
+              fill={inox} stroke={inoxDark} strokeWidth="0.5"
+            />
+            <path
+              d={isoFace(x + 0.012, skirt + height * 0.23, 0, 0.01, height * 0.55, 0, inoxDark)}
+              fill={inoxDark}
+            />
+          </g>
+        ))}
 
-      // Profile
-      if (mountingType === "profile") {
-        [0, length].forEach(x => {
-          const p = new THREE.Mesh(new THREE.BoxGeometry(0.03, height + skirt, 0.03), inoxMat);
-          p.position.set(x, (height + skirt) / 2, 0);
-          scene.add(p);
-        });
-        const base = new THREE.Mesh(new THREE.BoxGeometry(length, 0.03, 0.03), inoxMat);
-        base.position.set(length / 2, skirt, 0);
-        scene.add(base);
-      }
+        {/* PROFILE */}
+        {mountingType === "profile" && (
+          <>
+            {[0, length - 0.03].map((x, i) => (
+              <g key={i}>
+                <path d={isoFace(x, 0, 0, 0.03, totalH, 0, inox)} fill={inox} stroke={inoxDark} strokeWidth="0.5" />
+                <path d={isoFace(x + 0.03, 0, 0, 0, totalH, 0.03, inoxDark)} fill={inoxDark} />
+              </g>
+            ))}
+            <path d={isoFace(0, 0, 0, length, 0.03, 0, inox)} fill={inox} stroke={inoxDark} strokeWidth="0.5" />
+          </>
+        )}
 
-      // Canal integrat
-      if (mountingType === "embedded") {
-        const canal = new THREE.Mesh(new THREE.BoxGeometry(length + 0.06, 0.06, 0.04), inoxMat);
-        canal.position.set(length / 2, 0.03, 0);
-        scene.add(canal);
-      }
+        {/* CANAL INTEGRAT */}
+        {mountingType === "embedded" && (
+          <>
+            <path d={isoFace(-0.03, 0, 0, length + 0.06, 0.06, 0, inox)} fill={inox} stroke={inoxDark} strokeWidth="0.5" />
+            <path d={isoFace(length + 0.03, 0, 0, 0, 0.06, 0.04, inoxDark)} fill={inoxDark} />
+          </>
+        )}
 
-      // Mana curenta
-      if (includeHandrail) {
-        const hr = new THREE.Mesh(new THREE.CylinderGeometry(0.022, 0.022, length + 0.16, 16), inoxMat);
-        hr.rotation.z = Math.PI / 2;
-        hr.position.set(length / 2, height + skirt + 0.022, 0);
-        scene.add(hr);
-      }
+        {/* MANA CURENTA */}
+        {includeHandrail && (
+          <>
+            <path
+              d={isoFace(-0.08, totalH, 0, length + 0.16, 0.04, 0, inox)}
+              fill={inox} stroke={inoxDark} strokeWidth="0.5"
+            />
+            <path
+              d={isoFace(length + 0.08, totalH, 0, 0, 0.04, 0.04, inoxDark)}
+              fill={inoxDark}
+            />
+          </>
+        )}
 
-      // LED
-      if (includeLed) {
-        const ledMat = new THREE.MeshStandardMaterial({ color: 0xffdd88, emissive: 0xffaa00, emissiveIntensity: 1.5 });
-        const led = new THREE.Mesh(new THREE.BoxGeometry(length, 0.008, 0.008), ledMat);
-        led.position.set(length / 2, skirt + 0.02, 0.006);
-        scene.add(led);
-      }
+        {/* LED */}
+        {includeLed && (
+          <path
+            d={isoFace(0, skirt + 0.01, 0.005, length, 0.01, 0, "rgba(255,220,80,0.7)")}
+            fill="rgba(255,220,80,0.7)" stroke="rgba(255,200,50,0.9)" strokeWidth="0.5"
+          />
+        )}
 
-      renderer.render(scene, camera);
-    }).catch(err => {
-      console.error("Three.js load error:", err);
-    });
+        {/* Dimensiuni */}
+        <text x={isoX(length / 2, 0) - 5} y={isoY(length / 2, -0.12, 0)}
+          fill="rgba(200,169,110,0.7)" fontSize="8" fontFamily="DM Sans" textAnchor="middle">
+          {dimensions.length || "—"}m
+        </text>
+        <text x={isoX(0, 0) - 22} y={isoY(0, totalH / 2, 0)}
+          fill="rgba(200,169,110,0.7)" fontSize="8" fontFamily="DM Sans" textAnchor="middle">
+          {dimensions.height || "—"}m
+        </text>
 
-    return () => {
-      if (renderer) renderer.dispose();
-    };
-  }, [length, height, glassType, mountingType, includeHandrail, includeLed]);
+      </svg>
 
-  return (
-    <div style={{ width: "100%", background: "rgba(255,255,255,0.02)", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)" }}>
-      <div style={{ fontSize: "0.72rem", color: "rgba(240,237,232,0.35)", padding: "12px 16px 4px", textAlign: "center", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-        Previzualizare 3D · {panelCount} {panelCount === 1 ? "panou" : "panouri"}
-      </div>
-      <div ref={mountRef} style={{ width: "100%", height: 260 }} />
-      <div style={{ display: "flex", gap: 12, justifyContent: "center", padding: "8px 16px 12px", flexWrap: "wrap" }}>
+      <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 4, flexWrap: "wrap" }}>
         {[
-          { color: "rgba(180,220,255,0.6)", label: "Sticlă" },
-          mountingType === "clips"         && { color: "rgba(200,169,110,0.8)", label: `Butoni (${panelCount * 4} buc)` },
-          mountingType === "mini-montanti" && { color: "rgba(200,169,110,0.8)", label: "Mini-Montanți" },
-          mountingType === "profile"       && { color: "rgba(200,169,110,0.8)", label: "Profil" },
-          mountingType === "embedded"      && { color: "rgba(200,169,110,0.8)", label: "Canal Integrat" },
+          { color: glassFill, label: "Sticlă" },
+          mountingType === "clips"         && { color: inox, label: `Butoni (${panelCount * 4} buc)` },
+          mountingType === "mini-montanti" && { color: inox, label: "Mini-Montanți" },
+          mountingType === "profile"       && { color: inox, label: "Profil" },
+          mountingType === "embedded"      && { color: inox, label: "Canal Integrat" },
           hasSkirt        && { color: "rgba(180,220,255,0.25)", label: "Fustă 350mm" },
-          includeHandrail && { color: "rgba(200,169,110,0.9)", label: "Mână curentă" },
-          includeLed      && { color: "rgba(255,220,120,0.8)", label: "LED" },
+          includeHandrail && { color: inox, label: "Mână curentă" },
+          includeLed      && { color: "rgba(255,220,80,0.8)", label: "LED" },
         ].filter(Boolean).map((item, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <div style={{ width: 8, height: 8, borderRadius: 2, background: item.color }} />
+            <div style={{ width: 8, height: 8, borderRadius: 2, background: item.color, border: "1px solid rgba(255,255,255,0.1)" }} />
             <span style={{ fontSize: "0.7rem", color: "rgba(240,237,232,0.4)" }}>{item.label}</span>
           </div>
         ))}
