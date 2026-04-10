@@ -58,7 +58,7 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
         <rect x={x0 + 6} y={y0 + 6} width={9} height={gH * 0.38}
           fill="rgba(255,255,255,0.055)" rx="4" />
 
-        {{/* BUTONI INOX - 4 butoni per panou, panouri de max 1.1m */}
+        {/* BUTONI INOX - 4 butoni per panou, panouri de max 1.1m */}
 {mountingType === "clips" && (() => {
   const panelWidth = 1.1;
   const panelCount = Math.ceil(length / panelWidth);
