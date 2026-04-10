@@ -18,8 +18,8 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
     ctx.clearRect(0, 0, W, H);
 
     // Camera & projection
-    const camX = length * 0.5, camY = (height + skirt) * 0.6, camZ = length * 1.8;
-    const fov = 320;
+    const camX = length * 0.5, camY = (height + skirt) * 0.5, camZ = length * 2.2;
+    const fov = 380;
     const project = (x, y, z) => {
       const dx = x - camX, dy = y - camY, dz = z - camZ;
       const rx = dx * Math.cos(0.4) - dz * Math.sin(0.4);
@@ -27,7 +27,7 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
       const ry = dy * Math.cos(-0.25) - rz * Math.sin(-0.25);
       const rz2 = dy * Math.sin(-0.25) + rz * Math.cos(-0.25);
       const scale = fov / (fov + rz2 + 4);
-      return [W / 2 + rx * scale * 60, H / 2 - ry * scale * 60];
+      return [W / 2 + rx * scale * 55 - length * 8, H / 2 - ry * scale * 55 + (height + skirt) * 10];
     };
 
     const face = (pts, fill, stroke, sw = 1) => {
