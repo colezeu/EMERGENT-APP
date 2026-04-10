@@ -58,27 +58,37 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
         <rect x={x0 + 6} y={y0 + 6} width={9} height={gH * 0.38}
           fill="rgba(255,255,255,0.055)" rx="4" />
 
-        {/* BUTONI INOX - 2 perechi pe fusta */}
-        {mountingType === "clips" && (
-          <>
-            <circle cx={x0 + gW * 0.15} cy={skirtY + sH * 0.3} r={5.5}
+        {{/* BUTONI INOX - 4 butoni per panou, panouri de max 1.1m */}
+{mountingType === "clips" && (() => {
+  const panelWidth = 1.1;
+  const panelCount = Math.ceil(length / panelWidth);
+  const panels = Array.from({ length: panelCount }, (_, i) => ({
+    x1: x0 + (i / panelCount) * gW,
+    x2: x0 + ((i + 1) / panelCount) * gW,
+  }));
+  return panels.map((panel, i) => {
+    const left  = panel.x1 + (panel.x2 - panel.x1) * 0.18;
+    const right = panel.x1 + (panel.x2 - panel.x1) * 0.82;
+    const top   = skirtY + sH * 0.28;
+    const bot   = skirtY + sH * 0.72;
+    return (
+      <g key={i}>
+        {/* linie separare panouri */}
+        {i > 0 && <line x1={panel.x1} y1={y0} x2={panel.x1} y2={floorY}
+          stroke="rgba(180,220,255,0.15)" strokeWidth="1" strokeDasharray="3,3" />}
+        {/* 4 butoni: stanga-sus, stanga-jos, dreapta-sus, dreapta-jos */}
+        {[{cx:left,cy:top},{cx:left,cy:bot},{cx:right,cy:top},{cx:right,cy:bot}].map((b, j) => (
+          <g key={j}>
+            <circle cx={b.cx} cy={b.cy} r={5}
               fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
-            <circle cx={x0 + gW * 0.15} cy={skirtY + sH * 0.3} r={2.5}
+            <circle cx={b.cx} cy={b.cy} r={2.2}
               fill="rgba(200,169,110,0.6)" />
-            <circle cx={x0 + gW * 0.15} cy={skirtY + sH * 0.75} r={5.5}
-              fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
-            <circle cx={x0 + gW * 0.15} cy={skirtY + sH * 0.75} r={2.5}
-              fill="rgba(200,169,110,0.6)" />
-            <circle cx={x0 + gW * 0.85} cy={skirtY + sH * 0.3} r={5.5}
-              fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
-            <circle cx={x0 + gW * 0.85} cy={skirtY + sH * 0.3} r={2.5}
-              fill="rgba(200,169,110,0.6)" />
-            <circle cx={x0 + gW * 0.85} cy={skirtY + sH * 0.75} r={5.5}
-              fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
-            <circle cx={x0 + gW * 0.85} cy={skirtY + sH * 0.75} r={2.5}
-              fill="rgba(200,169,110,0.6)" />
-          </>
-        )}
+          </g>
+        ))}
+      </g>
+    );
+  });
+})()}
 {/* MINI-MONTANTI - 2 bare la capete, jumatate in sticla jumatate in pardoseala */}
 {mountingType === "mini-montanti" && (
   <>
