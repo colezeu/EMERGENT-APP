@@ -1,187 +1,218 @@
-export default function BalustradePreview2D({ dimensions, glassType, mountingType, includeHandrail, includeLed }) {
+import { useEffect, useRef } from "react";
+import * as THREE from "three";
+
+export default function BalustradePreview3D({ dimensions, glassType, mountingType, includeHandrail, includeLed }) {
+  const mountRef = useRef(null);
+
   const length = parseFloat(dimensions.length) || 3;
   const height = parseFloat(dimensions.height) || 0.9;
-  const SKIRT = mountingType === "clips" ? 0.35 : 0;
-
-  const W = 340, H = 220;
-  const MARGIN_X = 30, MARGIN_Y = 20;
-  const totalH = height + SKIRT;
-  const scale = Math.min((W - MARGIN_X * 2) / length, (H - MARGIN_Y * 2) / totalH);
-  const gW = length * scale;
-  const gH = height * scale;
-  const sH = SKIRT * scale;
-  const x0 = (W - gW) / 2;
-  const y0 = MARGIN_Y + (H - MARGIN_Y * 2 - gH - sH) / 2;
-  const skirtY = y0 + gH;
-  const floorY = skirtY + sH;
-
-  const glassOpacity = glassType === "extraclar" ? 0.16 : glassType === "10mm" ? 0.2 : 0.25;
-  const glassColor = `rgba(180,220,255,${glassOpacity})`;
+  const hasSkirt = mountingType === "clips";
+  const skirt = hasSkirt ? 0.35 : 0;
 
   const panelWidth = 1.1;
   const panelCount = Math.ceil(length / panelWidth);
-  const panels = Array.from({ length: panelCount }, (_, i) => ({
-    x1: x0 + (i / panelCount) * gW,
-    x2: x0 + ((i + 1) / panelCount) * gW,
-  }));
 
-  const montantCount = Math.max(2, Math.round(length * 1.2));
-  const montantY = height > 0.6
-    ? [y0 + gH * 0.28, y0 + gH * 0.72]
-    : [y0 + gH * 0.5];
+  useEffect(() => {
+    const el = mountRef.current;
+    if (!el) return;
+    const W = el.clientWidth, H = 260;
+
+    // Scene
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0f1117);
+
+    // Camera - anghi izometric fix
+    const camera = new THREE.PerspectiveCamera(35, W / H, 0.1, 100);
+    camera.position.set(length * 0.9, (height + skirt) * 1.8, length * 1.4);
+    camera.lookAt(length / 2, (height + skirt) / 2, 0);
+
+    // Renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(W, H);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.shadowMap.enabled = true;
+    el.innerHTML = "";
+    el.appendChild(renderer.domElement);
+
+    // Lights
+    const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+    scene.add(ambient);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    dirLight.position.set(5, 8, 5);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+    const fillLight = new THREE.DirectionalLight(0xc8a96e, 0.3);
+    fillLight.position.set(-5, 2, -3);
+    scene.add(fillLight);
+
+    // Pardoseala
+    const floorGeo = new THREE.BoxGeometry(length + 0.4, 0.04, 0.6);
+    const floorMat = new THREE.MeshStandardMaterial({ color: 0x1a1d26, roughness: 0.8 });
+    const floor = new THREE.Mesh(floorGeo, floorMat);
+    floor.position.set(length / 2, -0.02, 0);
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    // Culoare sticla
+    const glassColor = glassType === "extraclar" ? 0xddf0ff : glassType === "10mm" ? 0xc8e8ff : 0xb8deff;
+    const glassMat = new THREE.MeshPhysicalMaterial({
+      color: glassColor,
+      transparent: true,
+      opacity: 0.25,
+      roughness: 0,
+      metalness: 0,
+      transmission: 0.9,
+      thickness: 0.01,
+      side: THREE.DoubleSide,
+    });
+
+    // Panouri sticla
+    for (let i = 0; i < panelCount; i++) {
+      const pW = length / panelCount;
+      const totalH = height + skirt;
+
+      const glassGeo = new THREE.BoxGeometry(pW - 0.02, totalH, 0.01);
+      const glass = new THREE.Mesh(glassGeo, glassMat);
+      glass.position.set(i * pW + pW / 2, totalH / 2, 0);
+      glass.castShadow = true;
+      scene.add(glass);
+
+      // Rama sticla
+      const edgeMat = new THREE.MeshStandardMaterial({ color: 0x9ab8cc, roughness: 0.3, metalness: 0.5 });
+      const edges = [
+        { w: pW - 0.02, h: 0.012, d: 0.015, x: i * pW + pW / 2, y: totalH,       z: 0 },
+        { w: pW - 0.02, h: 0.012, d: 0.015, x: i * pW + pW / 2, y: skirt,         z: 0 },
+        { w: 0.012,     h: totalH, d: 0.015, x: i * pW,          y: totalH / 2,    z: 0 },
+        { w: 0.012,     h: totalH, d: 0.015, x: i * pW + pW,     y: totalH / 2,    z: 0 },
+      ];
+      edges.forEach(e => {
+        const m = new THREE.Mesh(new THREE.BoxGeometry(e.w, e.h, e.d), edgeMat);
+        m.position.set(e.x, e.y, e.z);
+        scene.add(m);
+      });
+
+      // Linie separare panouri (profil vertical subtire)
+      if (i > 0) {
+        const sepMat = new THREE.MeshStandardMaterial({ color: 0x778899, roughness: 0.4, metalness: 0.6 });
+        const sep = new THREE.Mesh(new THREE.BoxGeometry(0.015, totalH, 0.02), sepMat);
+        sep.position.set(i * pW, totalH / 2, 0);
+        scene.add(sep);
+      }
+    }
+
+    // Feronerie
+    const inoxMat = new THREE.MeshStandardMaterial({ color: 0xc8a96e, roughness: 0.2, metalness: 0.9 });
+
+    if (mountingType === "clips") {
+      // Butoni - 4 per panou, in fusta
+      for (let i = 0; i < panelCount; i++) {
+        const pW = length / panelCount;
+        const positions = [
+          { x: i * pW + pW * 0.18, y: skirt * 0.28 },
+          { x: i * pW + pW * 0.18, y: skirt * 0.72 },
+          { x: i * pW + pW * 0.82, y: skirt * 0.28 },
+          { x: i * pW + pW * 0.82, y: skirt * 0.72 },
+        ];
+        positions.forEach(pos => {
+          const btnGeo = new THREE.CylinderGeometry(0.025, 0.025, 0.02, 16);
+          const btn = new THREE.Mesh(btnGeo, inoxMat);
+          btn.position.set(pos.x, pos.y, 0.012);
+          btn.rotation.x = Math.PI / 2;
+          scene.add(btn);
+          // disc interior
+          const innerGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.022, 16);
+          const inner = new THREE.Mesh(innerGeo, new THREE.MeshStandardMaterial({ color: 0xffd080, metalness: 1, roughness: 0.1 }));
+          inner.position.set(pos.x, pos.y, 0.013);
+          inner.rotation.x = Math.PI / 2;
+          scene.add(inner);
+        });
+      }
+    }
+
+    if (mountingType === "mini-montanti") {
+      // 2 montanti la capete
+      [0.08, length - 0.08].forEach(x => {
+        const mGeo = new THREE.BoxGeometry(0.025, height * 0.55, 0.018);
+        const m = new THREE.Mesh(mGeo, inoxMat);
+        m.position.set(x, skirt + height * 0.55 / 2 + height * 0.23, 0);
+        scene.add(m);
+      });
+    }
+
+    if (mountingType === "profile") {
+      // Profile laterale si baza
+      [0, length].forEach(x => {
+        const pGeo = new THREE.BoxGeometry(0.03, height + skirt, 0.03);
+        const p = new THREE.Mesh(pGeo, inoxMat);
+        p.position.set(x, (height + skirt) / 2, 0);
+        scene.add(p);
+      });
+      const baseGeo = new THREE.BoxGeometry(length, 0.03, 0.03);
+      const base = new THREE.Mesh(baseGeo, inoxMat);
+      base.position.set(length / 2, skirt, 0);
+      scene.add(base);
+    }
+
+    if (mountingType === "embedded") {
+      const canalGeo = new THREE.BoxGeometry(length + 0.06, 0.06, 0.04);
+      const canal = new THREE.Mesh(canalGeo, inoxMat);
+      canal.position.set(length / 2, 0.03, 0);
+      scene.add(canal);
+    }
+
+    // Mana curenta
+    if (includeHandrail) {
+      const hrGeo = new THREE.CylinderGeometry(0.022, 0.022, length + 0.16, 16);
+      const hr = new THREE.Mesh(hrGeo, inoxMat);
+      hr.rotation.z = Math.PI / 2;
+      hr.position.set(length / 2, height + skirt + 0.022, 0);
+      scene.add(hr);
+      // suporti
+      [0.08, length - 0.08].forEach(x => {
+        const sGeo = new THREE.CylinderGeometry(0.01, 0.01, 0.1, 8);
+        const s = new THREE.Mesh(sGeo, inoxMat);
+        s.position.set(x, height + skirt - 0.028, 0);
+        scene.add(s);
+      });
+    }
+
+    // LED strip
+    if (includeLed) {
+      const ledMat = new THREE.MeshStandardMaterial({ color: 0xffdd88, emissive: 0xffaa00, emissiveIntensity: 1.5 });
+      const ledGeo = new THREE.BoxGeometry(length, 0.008, 0.008);
+      const led = new THREE.Mesh(ledGeo, ledMat);
+      led.position.set(length / 2, skirt + 0.02, 0.006);
+      scene.add(led);
+    }
+
+    // Render static
+    renderer.render(scene, camera);
+
+    return () => {
+      renderer.dispose();
+    };
+  }, [length, height, glassType, mountingType, includeHandrail, includeLed]);
 
   return (
-    <div style={{ width: "100%", background: "rgba(255,255,255,0.02)", borderRadius: 16, padding: "16px 12px", border: "1px solid rgba(255,255,255,0.07)" }}>
-      <div style={{ fontSize: "0.72rem", color: "rgba(240,237,232,0.35)", marginBottom: 10, textAlign: "center", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-        Previzualizare 2D · Vedere Frontală
+    <div style={{ width: "100%", background: "rgba(255,255,255,0.02)", borderRadius: 16, overflow: "hidden", border: "1px solid rgba(255,255,255,0.07)" }}>
+      <div style={{ fontSize: "0.72rem", color: "rgba(240,237,232,0.35)", padding: "12px 16px 0", textAlign: "center", letterSpacing: "0.08em", textTransform: "uppercase" }}>
+        Previzualizare 3D · {Math.ceil((parseFloat(dimensions.length) || 3) / 1.1)} {Math.ceil((parseFloat(dimensions.length) || 3) / 1.1) === 1 ? "panou" : "panouri"}
       </div>
-      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: "block" }}>
-
-        {/* Pardoseala */}
-        <line x1={x0 - 16} y1={floorY} x2={x0 + gW + 16} y2={floorY}
-          stroke="rgba(200,169,110,0.45)" strokeWidth="2.5" />
-
-        {/* FUSTA - doar la butoni */}
-        {SKIRT > 0 && (
-          <>
-            <rect x={x0} y={skirtY} width={gW} height={sH}
-              fill="rgba(180,220,255,0.06)"
-              stroke="rgba(180,220,255,0.2)" strokeWidth="1"
-              strokeDasharray="4,3" />
-            <line x1={x0} y1={skirtY} x2={x0 + gW} y2={skirtY}
-              stroke="rgba(180,220,255,0.35)" strokeWidth="1" strokeDasharray="3,3" />
-            <text x={x0 + gW + 6} y={skirtY + sH / 2 + 3}
-              fill="rgba(200,169,110,0.5)" fontSize="7" fontFamily="DM Sans">350</text>
-            <line x1={x0 + gW + 4} y1={skirtY} x2={x0 + gW + 4} y2={floorY}
-              stroke="rgba(200,169,110,0.3)" strokeWidth="0.8" />
-          </>
-        )}
-
-        {/* Panou sticla */}
-        <rect x={x0} y={y0} width={gW} height={gH}
-          fill={glassColor}
-          stroke="rgba(180,220,255,0.55)" strokeWidth="1.5"
-          rx="1" />
-        <rect x={x0 + 6} y={y0 + 6} width={9} height={gH * 0.38}
-          fill="rgba(255,255,255,0.055)" rx="4" />
-
-        {/* Linii separare panouri */}
-        {panels.map((panel, i) => i > 0 && (
-          <line key={i} x1={panel.x1} y1={y0} x2={panel.x1} y2={floorY}
-            stroke="rgba(180,220,255,0.15)" strokeWidth="1" strokeDasharray="3,3" />
-        ))}
-
-        {/* BUTONI INOX - 4 butoni per panou, in fusta */}
-        {mountingType === "clips" && panels.map((panel, i) => {
-          const left  = panel.x1 + (panel.x2 - panel.x1) * 0.18;
-          const right = panel.x1 + (panel.x2 - panel.x1) * 0.82;
-          const top   = skirtY + sH * 0.28;
-          const bot   = skirtY + sH * 0.72;
-          return [
-            { cx: left,  cy: top },
-            { cx: left,  cy: bot },
-            { cx: right, cy: top },
-            { cx: right, cy: bot },
-          ].map((b, j) => (
-            <g key={`${i}-${j}`}>
-              <circle cx={b.cx} cy={b.cy} r={5}
-                fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
-              <circle cx={b.cx} cy={b.cy} r={2.2}
-                fill="rgba(200,169,110,0.6)" />
-            </g>
-          ));
-        })}
-
-        {/* MINI-MONTANTI - 2 bare la capete, jumatate in sticla jumatate in pardoseala */}
-        {mountingType === "mini-montanti" && (
-          <>
-            <rect x={x0 + 10} y={y0 + gH * 0.76} width={6} height={gH * 0.24 * 0.8 + 11}
-              fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="1.5" />
-            <rect x={x0 + gW - 16} y={y0 + gH * 0.76} width={6} height={gH * 0.24 * 0.8 + 11}
-              fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="1.5" />
-          </>
-        )}
-
-        {/* PROFILE U/V/L */}
-        {mountingType === "profile" && (
-          <>
-            <rect x={x0 - 5} y={y0} width={7} height={gH} fill="rgba(200,169,110,0.5)" rx="2" />
-            <rect x={x0 + gW - 2} y={y0} width={7} height={gH} fill="rgba(200,169,110,0.5)" rx="2" />
-            <rect x={x0 - 5} y={y0 + gH - 4} width={gW + 10} height={8} fill="rgba(200,169,110,0.4)" rx="2" />
-          </>
-        )}
-
-        {/* CANAL INTEGRAT */}
-        {mountingType === "embedded" && (
-          <>
-            <rect x={x0 - 3} y={floorY - 14} width={gW + 6} height={14}
-              fill="rgba(200,169,110,0.35)" rx="2" />
-            <rect x={x0 - 1} y={floorY - 12} width={gW + 2} height={10}
-              fill="rgba(200,169,110,0.15)" rx="1" />
-          </>
-        )}
-
-        {/* MANA CURENTA */}
-        {includeHandrail && (
-          <rect x={x0 - 8} y={y0 - 9} width={gW + 16} height={8}
-            fill="rgba(200,169,110,0.65)" rx="4" />
-        )}
-
-        {/* LED */}
-        {includeLed && (
-          <rect x={x0} y={y0 + gH - 5} width={gW} height={4}
-            fill="rgba(255,220,120,0.55)" rx="2" />
-        )}
-
-        {/* Dimensiune lungime */}
-        {dimensions.length && (
-          <>
-            <line x1={x0} y1={H - 10} x2={x0 + gW} y2={H - 10}
-              stroke="rgba(200,169,110,0.45)" strokeWidth="1" />
-            <line x1={x0} y1={H - 14} x2={x0} y2={H - 6}
-              stroke="rgba(200,169,110,0.45)" strokeWidth="1" />
-            <line x1={x0 + gW} y1={H - 14} x2={x0 + gW} y2={H - 6}
-              stroke="rgba(200,169,110,0.45)" strokeWidth="1" />
-            <text x={x0 + gW / 2} y={H - 2} textAnchor="middle"
-              fill="rgba(200,169,110,0.8)" fontSize="9" fontFamily="DM Sans">
-              {dimensions.length}m · {panelCount} {panelCount === 1 ? "panou" : "panouri"}
-            </text>
-          </>
-        )}
-
-        {/* Dimensiune inaltime */}
-        {dimensions.height && (
-          <>
-            <line x1={10} y1={y0} x2={10} y2={y0 + gH}
-              stroke="rgba(200,169,110,0.45)" strokeWidth="1" />
-            <line x1={6} y1={y0} x2={14} y2={y0}
-              stroke="rgba(200,169,110,0.45)" strokeWidth="1" />
-            <line x1={6} y1={y0 + gH} x2={14} y2={y0 + gH}
-              stroke="rgba(200,169,110,0.45)" strokeWidth="1" />
-            <text x={18} y={y0 + gH / 2 + 3} textAnchor="middle"
-              fill="rgba(200,169,110,0.8)" fontSize="9" fontFamily="DM Sans"
-              transform={`rotate(-90, 18, ${y0 + gH / 2})`}>
-              {dimensions.height}m
-            </text>
-          </>
-        )}
-
-      </svg>
-
-      <div style={{ display: "flex", gap: 14, justifyContent: "center", marginTop: 8, flexWrap: "wrap" }}>
+      <div ref={mountRef} style={{ width: "100%", height: 260 }} />
+      <div style={{ display: "flex", gap: 12, justifyContent: "center", padding: "8px 16px 12px", flexWrap: "wrap" }}>
         {[
           { color: "rgba(180,220,255,0.6)", label: "Sticlă" },
-          mountingType === "clips"         && { color: "rgba(200,169,110,0.75)", label: `Butoni Inox (${panelCount * 4} buc)` },
-          mountingType === "mini-montanti" && { color: "rgba(200,169,110,0.75)", label: "Mini-Montanți" },
-          mountingType === "profile"       && { color: "rgba(200,169,110,0.7)",  label: "Profil" },
-          mountingType === "embedded"      && { color: "rgba(200,169,110,0.6)",  label: "Canal Integrat" },
-          SKIRT > 0       && { color: "rgba(180,220,255,0.25)", label: "Fustă 350mm" },
-          includeHandrail && { color: "rgba(200,169,110,0.9)",  label: "Mână curentă" },
-          includeLed      && { color: "rgba(255,220,120,0.8)",  label: "LED" },
+          mountingType === "clips"         && { color: "rgba(200,169,110,0.8)", label: `Butoni (${Math.ceil((parseFloat(dimensions.length)||3)/1.1)*4} buc)` },
+          mountingType === "mini-montanti" && { color: "rgba(200,169,110,0.8)", label: "Mini-Montanți" },
+          mountingType === "profile"       && { color: "rgba(200,169,110,0.8)", label: "Profil" },
+          mountingType === "embedded"      && { color: "rgba(200,169,110,0.8)", label: "Canal Integrat" },
+          hasSkirt        && { color: "rgba(180,220,255,0.25)", label: "Fustă 350mm" },
+          includeHandrail && { color: "rgba(200,169,110,0.9)", label: "Mână curentă" },
+          includeLed      && { color: "rgba(255,220,120,0.8)", label: "LED" },
         ].filter(Boolean).map((item, i) => (
           <div key={i} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <div style={{ width: 10, height: 10, borderRadius: 2, background: item.color }} />
-            <span style={{ fontSize: "0.72rem", color: "rgba(240,237,232,0.45)" }}>{item.label}</span>
+            <div style={{ width: 8, height: 8, borderRadius: 2, background: item.color }} />
+            <span style={{ fontSize: "0.7rem", color: "rgba(240,237,232,0.4)" }}>{item.label}</span>
           </div>
         ))}
       </div>
