@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { ConfigHeader, SectionCard, OptionBtn, ToggleOption, NumberInput, QuoteSidebar, PreviewBox, PageLoader, calcQuote } from "./ConfiguratorShared.jsx";
 import QuoteModal from "./QuoteModal.jsx";
-import BalustradePreview2D from "./BalustradePreview2D.jsx";
+import BalustradePreview3D from "./BalustradePreview3D.jsx";
 
 const FALLBACK = { name:"Balustrade", basePrice:50, glassShapes:{ dreapta:{name:"Sticlă Dreaptă",desc:"Panou drept standard"}, forma:{name:"Sticlă Formă (rampă)",desc:"Tăiat pe unghi / curbă"} }, hardwareTypes:{ butoni:{name:"Cu Butoni Inox",pricePerMeter:55,desc:"Puncte de fixare, design minimalist"}, profil:{name:"Cu Profil",pricePerMeter:80,desc:"Profil U/V/L la bază"}, "mini-montanti":{name:"Cu Mini-Montanți",pricePerMeter:95,desc:"Montanți intermediari inox"}, "profil-pardoseala":{name:"Profil Pardoseală",pricePerMeter:120,desc:"Canal integrat în pardoseală"} }, profileShapes:{ U:{name:"Formă U",pricePerMeter:0}, V:{name:"Formă V",pricePerMeter:10}, L:{name:"Formă L",pricePerMeter:10} }, glassTypes:{ "8mm":{name:"Sticlă Laminată 8mm",pricePerSqm:150,desc:"Laminat 44.2, ideal interior"}, "10mm":{name:"Sticlă Securizată 10mm",pricePerSqm:200,desc:"Standard exterior"}, extraclar:{name:"Sticlă Extra Clară",pricePerSqm:280,desc:"Transparență maximă"} }, options:{ handrail:{name:"Mână Curentă Inox",pricePerMeter:45,desc:"Rotundă Ø42mm, satinat"}, "handrail-slim":{name:"Mână Curentă Slim",pricePerMeter:85,desc:"Profil plat 40x10mm"}, led:{name:"Iluminare LED",price:150,desc:"Bandă LED 3000K"} } };
 
