@@ -18,6 +18,13 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
   const glassOpacity = glassType === "extraclar" ? 0.16 : glassType === "10mm" ? 0.2 : 0.25;
   const glassColor = `rgba(180,220,255,${glassOpacity})`;
 
+  const panelWidth = 1.1;
+  const panelCount = Math.ceil(length / panelWidth);
+  const panels = Array.from({ length: panelCount }, (_, i) => ({
+    x1: x0 + (i / panelCount) * gW,
+    x2: x0 + ((i + 1) / panelCount) * gW,
+  }));
+
   const montantCount = Math.max(2, Math.round(length * 1.2));
   const montantY = height > 0.6
     ? [y0 + gH * 0.28, y0 + gH * 0.72]
@@ -58,46 +65,42 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
         <rect x={x0 + 6} y={y0 + 6} width={9} height={gH * 0.38}
           fill="rgba(255,255,255,0.055)" rx="4" />
 
-        {/* BUTONI INOX - 4 butoni per panou, panouri de max 1.1m */}
-{mountingType === "clips" && (() => {
-  const panelWidth = 1.1;
-  const panelCount = Math.ceil(length / panelWidth);
-  const panels = Array.from({ length: panelCount }, (_, i) => ({
-    x1: x0 + (i / panelCount) * gW,
-    x2: x0 + ((i + 1) / panelCount) * gW,
-  }));
-  return panels.map((panel, i) => {
-    const left  = panel.x1 + (panel.x2 - panel.x1) * 0.18;
-    const right = panel.x1 + (panel.x2 - panel.x1) * 0.82;
-    const top   = skirtY + sH * 0.28;
-    const bot   = skirtY + sH * 0.72;
-    return (
-      <g key={i}>
-        {/* linie separare panouri */}
-        {i > 0 && <line x1={panel.x1} y1={y0} x2={panel.x1} y2={floorY}
-          stroke="rgba(180,220,255,0.15)" strokeWidth="1" strokeDasharray="3,3" />}
-        {/* 4 butoni: stanga-sus, stanga-jos, dreapta-sus, dreapta-jos */}
-        {[{cx:left,cy:top},{cx:left,cy:bot},{cx:right,cy:top},{cx:right,cy:bot}].map((b, j) => (
-          <g key={j}>
-            <circle cx={b.cx} cy={b.cy} r={5}
-              fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
-            <circle cx={b.cx} cy={b.cy} r={2.2}
-              fill="rgba(200,169,110,0.6)" />
-          </g>
+        {/* Linii separare panouri */}
+        {panels.map((panel, i) => i > 0 && (
+          <line key={i} x1={panel.x1} y1={y0} x2={panel.x1} y2={floorY}
+            stroke="rgba(180,220,255,0.15)" strokeWidth="1" strokeDasharray="3,3" />
         ))}
-      </g>
-    );
-  });
-})()}
-{/* MINI-MONTANTI - 2 bare la capete, jumatate in sticla jumatate in pardoseala */}
-{mountingType === "mini-montanti" && (
-  <>
-    <rect x={x0 + 10} y={y0 + gH * 0.76} width={6} height={gH * 0.24 * 0.8 + 11}
-      fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="1.5" />
-    <rect x={x0 + gW - 16} y={y0 + gH * 0.76} width={6} height={gH * 0.24 * 0.8 + 11}
-      fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="1.5" />
-  </>
-)}
+
+        {/* BUTONI INOX - 4 butoni per panou, in fusta */}
+        {mountingType === "clips" && panels.map((panel, i) => {
+          const left  = panel.x1 + (panel.x2 - panel.x1) * 0.18;
+          const right = panel.x1 + (panel.x2 - panel.x1) * 0.82;
+          const top   = skirtY + sH * 0.28;
+          const bot   = skirtY + sH * 0.72;
+          return [
+            { cx: left,  cy: top },
+            { cx: left,  cy: bot },
+            { cx: right, cy: top },
+            { cx: right, cy: bot },
+          ].map((b, j) => (
+            <g key={`${i}-${j}`}>
+              <circle cx={b.cx} cy={b.cy} r={5}
+                fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.75)" strokeWidth="1.2" />
+              <circle cx={b.cx} cy={b.cy} r={2.2}
+                fill="rgba(200,169,110,0.6)" />
+            </g>
+          ));
+        })}
+
+        {/* MINI-MONTANTI - 2 bare la capete, jumatate in sticla jumatate in pardoseala */}
+        {mountingType === "mini-montanti" && (
+          <>
+            <rect x={x0 + 10} y={y0 + gH * 0.76} width={6} height={gH * 0.24 * 0.8 + 11}
+              fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="1.5" />
+            <rect x={x0 + gW - 16} y={y0 + gH * 0.76} width={6} height={gH * 0.24 * 0.8 + 11}
+              fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="1.5" />
+          </>
+        )}
 
         {/* PROFILE U/V/L */}
         {mountingType === "profile" && (
@@ -141,7 +144,7 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
               stroke="rgba(200,169,110,0.45)" strokeWidth="1" />
             <text x={x0 + gW / 2} y={H - 2} textAnchor="middle"
               fill="rgba(200,169,110,0.8)" fontSize="9" fontFamily="DM Sans">
-              {dimensions.length}m
+              {dimensions.length}m · {panelCount} {panelCount === 1 ? "panou" : "panouri"}
             </text>
           </>
         )}
@@ -168,7 +171,7 @@ export default function BalustradePreview2D({ dimensions, glassType, mountingTyp
       <div style={{ display: "flex", gap: 14, justifyContent: "center", marginTop: 8, flexWrap: "wrap" }}>
         {[
           { color: "rgba(180,220,255,0.6)", label: "Sticlă" },
-          mountingType === "clips"         && { color: "rgba(200,169,110,0.75)", label: "Butoni Inox" },
+          mountingType === "clips"         && { color: "rgba(200,169,110,0.75)", label: `Butoni Inox (${panelCount * 4} buc)` },
           mountingType === "mini-montanti" && { color: "rgba(200,169,110,0.75)", label: "Mini-Montanți" },
           mountingType === "profile"       && { color: "rgba(200,169,110,0.7)",  label: "Profil" },
           mountingType === "embedded"      && { color: "rgba(200,169,110,0.6)",  label: "Canal Integrat" },
