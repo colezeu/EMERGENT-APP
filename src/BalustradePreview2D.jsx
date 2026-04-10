@@ -5,189 +5,90 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
   const skirt = hasSkirt ? 0.35 : 0;
   const panelCount = Math.ceil(length / 1.1);
 
-  // Izometric projection
-  const W = 340, H = 240;
-  const scale = Math.min(120 / length, 80 / (height + skirt + 0.3));
-  const isoX = (x, z) => W * 0.18 + (x + z) * scale * 0.7;
-  const isoY = (x, y, z) => H * 0.75 - y * scale - (x - z) * scale * 0.35;
-
-  const glassOpacity = glassType === "extraclar" ? 0.18 : glassType === "10mm" ? 0.24 : 0.3;
-  const glassStroke = "rgba(180,220,255,0.6)";
-  const glassFill = `rgba(180,220,255,${glassOpacity})`;
-  const inox = "rgba(200,169,110,0.85)";
-  const inoxDark = "rgba(160,130,80,0.9)";
-
+  const W = 340, H = 220;
+  const MARGIN_X = 30, MARGIN_Y = 20;
   const totalH = height + skirt;
-
-  // Helper: draw iso face (parallelogram)
-  const isoFace = (x0, y0, z0, dx, dy, dz, fill, stroke = "none", sw = 0) => {
-    const pts = [
-      [isoX(x0, z0),          isoY(x0, y0, z0)],
-      [isoX(x0+dx, z0+dz),    isoY(x0+dx, y0, z0+dz)],
-      [isoX(x0+dx, z0+dz),    isoY(x0+dx, y0+dy, z0+dz)],
-      [isoX(x0, z0),          isoY(x0, y0+dy, z0)],
-    ];
-    return `M${pts[0]} L${pts[1]} L${pts[2]} L${pts[3]} Z`;
-  };
-
-  const panels = Array.from({ length: panelCount }, (_, i) => i);
-  const pW = length / panelCount;
+  const scale = Math.min((W - MARGIN_X * 2) / length, (H - MARGIN_Y * 2) / totalH);
+  const gW = length * scale;
+  const gH = height * scale;
+  const sH = skirt * scale;
+  const x0 = (W - gW) / 2;
+  const y0 = MARGIN_Y + (H - MARGIN_Y * 2 - gH - sH) / 2;
+  const skirtY = y0 + gH;
+  const floorY = skirtY + sH;
+  const glassOpacity = glassType === "extraclar" ? 0.16 : glassType === "10mm" ? 0.2 : 0.25;
+  const glassColor = `rgba(180,220,255,${glassOpacity})`;
+  const panels = Array.from({ length: panelCount }, (_, i) => ({
+    x1: x0 + (i / panelCount) * gW,
+    x2: x0 + ((i + 1) / panelCount) * gW,
+  }));
 
   return (
-    <div style={{ width: "100%", background: "rgba(255,255,255,0.02)", borderRadius: 16, padding: "12px", border: "1px solid rgba(255,255,255,0.07)" }}>
-      <div style={{ fontSize: "0.72rem", color: "rgba(240,237,232,0.35)", marginBottom: 6, textAlign: "center", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-        Previzualizare 3D · {panelCount} {panelCount === 1 ? "panou" : "panouri"}
+    <div style={{ width:"100%", background:"rgba(255,255,255,0.02)", borderRadius:16, padding:"16px 12px", border:"1px solid rgba(255,255,255,0.07)" }}>
+      <div style={{ fontSize:"0.72rem", color:"rgba(240,237,232,0.35)", marginBottom:10, textAlign:"center", letterSpacing:"0.08em", textTransform:"uppercase" }}>
+        Previzualizare 2D · {panelCount} {panelCount === 1 ? "panou" : "panouri"}
       </div>
-      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: "block" }}>
-
-        {/* Pardoseala */}
-        <path d={isoFace(0, -0.04, -0.15, length, 0.04, 0, "rgba(30,33,44,0.9)", "rgba(200,169,110,0.2)", 1)}
-          fill="rgba(30,33,44,0.9)" stroke="rgba(200,169,110,0.2)" strokeWidth="1" />
-        <path d={isoFace(0, -0.04, -0.15, length, 0.04, 0.15, "rgba(25,28,38,0.9)")}
-          fill="rgba(25,28,38,0.9)" stroke="rgba(200,169,110,0.15)" strokeWidth="0.5" />
-
-        {/* Panouri sticla */}
-        {panels.map(i => (
-          <g key={i}>
-            {/* Fata frontala */}
-            <path
-              d={isoFace(i * pW, 0, 0, pW - 0.02, totalH, 0, glassFill, glassStroke, 1)}
-              fill={glassFill} stroke={glassStroke} strokeWidth="1"
-            />
-            {/* Fata laterala (grosime) */}
-            <path
-              d={isoFace(i * pW + pW - 0.02, 0, 0, 0.01, totalH, 0, "rgba(140,190,220,0.15)")}
-              fill="rgba(140,190,220,0.15)" stroke="rgba(180,220,255,0.3)" strokeWidth="0.5"
-            />
-            {/* Sus */}
-            <path
-              d={isoFace(i * pW, totalH, 0, pW - 0.02, 0, 0.01, "rgba(200,230,255,0.12)")}
-              fill="rgba(200,230,255,0.12)" stroke="rgba(180,220,255,0.4)" strokeWidth="0.5"
-            />
-            {/* Rama sus */}
-            <path
-              d={isoFace(i * pW, totalH - 0.01, 0, pW - 0.02, 0.01, 0, "rgba(150,190,210,0.5)")}
-              fill="rgba(150,190,210,0.5)" stroke="rgba(180,220,255,0.5)" strokeWidth="0.5"
-            />
-            {/* Separator panouri */}
-            {i > 0 && (
-              <line
-                x1={isoX(i * pW, 0)} y1={isoY(i * pW, 0, 0)}
-                x2={isoX(i * pW, 0)} y2={isoY(i * pW, totalH, 0)}
-                stroke="rgba(180,220,255,0.2)" strokeWidth="1" strokeDasharray="3,2"
-              />
-            )}
-          </g>
+      <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display:"block" }}>
+        <line x1={x0-16} y1={floorY} x2={x0+gW+16} y2={floorY} stroke="rgba(200,169,110,0.45)" strokeWidth="2.5"/>
+        {hasSkirt && (
+          <>
+            <rect x={x0} y={skirtY} width={gW} height={sH} fill="rgba(180,220,255,0.06)" stroke="rgba(180,220,255,0.2)" strokeWidth="1" strokeDasharray="4,3"/>
+            <text x={x0+gW+6} y={skirtY+sH/2+3} fill="rgba(200,169,110,0.5)" fontSize="7" fontFamily="DM Sans">350</text>
+          </>
+        )}
+        <rect x={x0} y={y0} width={gW} height={gH} fill={glassColor} stroke="rgba(180,220,255,0.55)" strokeWidth="1.5" rx="1"/>
+        {panels.map((p, i) => i > 0 && (
+          <line key={i} x1={p.x1} y1={y0} x2={p.x1} y2={floorY} stroke="rgba(180,220,255,0.15)" strokeWidth="1" strokeDasharray="3,3"/>
         ))}
-
-        {/* BUTONI INOX */}
-        {mountingType === "clips" && panels.map(i => {
-          const positions = [
-            { x: i * pW + pW * 0.18, y: skirt * 0.28 },
-            { x: i * pW + pW * 0.18, y: skirt * 0.72 },
-            { x: i * pW + pW * 0.82, y: skirt * 0.28 },
-            { x: i * pW + pW * 0.82, y: skirt * 0.72 },
-          ];
-          return positions.map((pos, j) => (
-            <g key={`b-${i}-${j}`}>
-              <circle
-                cx={isoX(pos.x, 0.015)} cy={isoY(pos.x, pos.y, 0.015)} r={4}
-                fill="rgba(200,169,110,0.2)" stroke={inox} strokeWidth="1.2"
-              />
-              <circle
-                cx={isoX(pos.x, 0.015)} cy={isoY(pos.x, pos.y, 0.015)} r={1.8}
-                fill={inox}
-              />
+        {mountingType === "clips" && panels.map((p, i) => {
+          const left  = p.x1 + (p.x2 - p.x1) * 0.18;
+          const right = p.x1 + (p.x2 - p.x1) * 0.82;
+          const top   = skirtY + sH * 0.28;
+          const bot   = skirtY + sH * 0.72;
+          return [{cx:left,cy:top},{cx:left,cy:bot},{cx:right,cy:top},{cx:right,cy:bot}].map((b,j) => (
+            <g key={`${i}-${j}`}>
+              <circle cx={b.cx} cy={b.cy} r={5} fill="rgba(200,169,110,0.15)" stroke="rgba(200,169,110,0.75)" strokeWidth="1.2"/>
+              <circle cx={b.cx} cy={b.cy} r={2.2} fill="rgba(200,169,110,0.6)"/>
             </g>
           ));
         })}
-
-        {/* MINI-MONTANTI */}
-        {mountingType === "mini-montanti" && [0.08, length - 0.08].map((x, i) => (
-          <g key={i}>
-            <path
-              d={isoFace(x - 0.013, skirt + height * 0.23, 0, 0.025, height * 0.55, 0, inox)}
-              fill={inox} stroke={inoxDark} strokeWidth="0.5"
-            />
-            <path
-              d={isoFace(x + 0.012, skirt + height * 0.23, 0, 0.01, height * 0.55, 0, inoxDark)}
-              fill={inoxDark}
-            />
-          </g>
-        ))}
-
-        {/* PROFILE */}
+        {mountingType === "mini-montanti" && (
+          <>
+            <rect x={x0+10} y={y0+gH*0.76} width={6} height={gH*0.24*0.8+11} fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="1.5"/>
+            <rect x={x0+gW-16} y={y0+gH*0.76} width={6} height={gH*0.24*0.8+11} fill="rgba(200,169,110,0.5)" stroke="rgba(200,169,110,0.8)" strokeWidth="1" rx="1.5"/>
+          </>
+        )}
         {mountingType === "profile" && (
           <>
-            {[0, length - 0.03].map((x, i) => (
-              <g key={i}>
-                <path d={isoFace(x, 0, 0, 0.03, totalH, 0, inox)} fill={inox} stroke={inoxDark} strokeWidth="0.5" />
-                <path d={isoFace(x + 0.03, 0, 0, 0, totalH, 0.03, inoxDark)} fill={inoxDark} />
-              </g>
-            ))}
-            <path d={isoFace(0, 0, 0, length, 0.03, 0, inox)} fill={inox} stroke={inoxDark} strokeWidth="0.5" />
+            <rect x={x0-5} y={y0} width={7} height={gH} fill="rgba(200,169,110,0.5)" rx="2"/>
+            <rect x={x0+gW-2} y={y0} width={7} height={gH} fill="rgba(200,169,110,0.5)" rx="2"/>
+            <rect x={x0-5} y={y0+gH-4} width={gW+10} height={8} fill="rgba(200,169,110,0.4)" rx="2"/>
           </>
         )}
-
-        {/* CANAL INTEGRAT */}
         {mountingType === "embedded" && (
           <>
-            <path d={isoFace(-0.03, 0, 0, length + 0.06, 0.06, 0, inox)} fill={inox} stroke={inoxDark} strokeWidth="0.5" />
-            <path d={isoFace(length + 0.03, 0, 0, 0, 0.06, 0.04, inoxDark)} fill={inoxDark} />
+            <rect x={x0-3} y={floorY-14} width={gW+6} height={14} fill="rgba(200,169,110,0.35)" rx="2"/>
+            <rect x={x0-1} y={floorY-12} width={gW+2} height={10} fill="rgba(200,169,110,0.15)" rx="1"/>
           </>
         )}
-
-        {/* MANA CURENTA */}
         {includeHandrail && (
-          <>
-            <path
-              d={isoFace(-0.08, totalH, 0, length + 0.16, 0.04, 0, inox)}
-              fill={inox} stroke={inoxDark} strokeWidth="0.5"
-            />
-            <path
-              d={isoFace(length + 0.08, totalH, 0, 0, 0.04, 0.04, inoxDark)}
-              fill={inoxDark}
-            />
-          </>
+          <rect x={x0-8} y={y0-9} width={gW+16} height={8} fill="rgba(200,169,110,0.65)" rx="4"/>
         )}
-
-        {/* LED */}
         {includeLed && (
-          <path
-            d={isoFace(0, skirt + 0.01, 0.005, length, 0.01, 0, "rgba(255,220,80,0.7)")}
-            fill="rgba(255,220,80,0.7)" stroke="rgba(255,200,50,0.9)" strokeWidth="0.5"
-          />
+          <rect x={x0} y={y0+gH-5} width={gW} height={4} fill="rgba(255,220,120,0.55)" rx="2"/>
         )}
-
-        {/* Dimensiuni */}
-        <text x={isoX(length / 2, 0) - 5} y={isoY(length / 2, -0.12, 0)}
-          fill="rgba(200,169,110,0.7)" fontSize="8" fontFamily="DM Sans" textAnchor="middle">
-          {dimensions.length || "—"}m
-        </text>
-        <text x={isoX(0, 0) - 22} y={isoY(0, totalH / 2, 0)}
-          fill="rgba(200,169,110,0.7)" fontSize="8" fontFamily="DM Sans" textAnchor="middle">
-          {dimensions.height || "—"}m
-        </text>
-
+        {dimensions.length && (
+          <text x={x0+gW/2} y={H-2} textAnchor="middle" fill="rgba(200,169,110,0.8)" fontSize="9" fontFamily="DM Sans">
+            {dimensions.length}m · {panelCount} {panelCount===1?"panou":"panouri"}
+          </text>
+        )}
+        {dimensions.height && (
+          <text x={18} y={y0+gH/2+3} textAnchor="middle" fill="rgba(200,169,110,0.8)" fontSize="9" fontFamily="DM Sans"
+            transform={`rotate(-90, 18, ${y0+gH/2})`}>
+            {dimensions.height}m
+          </text>
+        )}
       </svg>
-
-      <div style={{ display: "flex", gap: 12, justifyContent: "center", marginTop: 4, flexWrap: "wrap" }}>
-        {[
-          { color: glassFill, label: "Sticlă" },
-          mountingType === "clips"         && { color: inox, label: `Butoni (${panelCount * 4} buc)` },
-          mountingType === "mini-montanti" && { color: inox, label: "Mini-Montanți" },
-          mountingType === "profile"       && { color: inox, label: "Profil" },
-          mountingType === "embedded"      && { color: inox, label: "Canal Integrat" },
-          hasSkirt        && { color: "rgba(180,220,255,0.25)", label: "Fustă 350mm" },
-          includeHandrail && { color: inox, label: "Mână curentă" },
-          includeLed      && { color: "rgba(255,220,80,0.8)", label: "LED" },
-        ].filter(Boolean).map((item, i) => (
-          <div key={i} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-            <div style={{ width: 8, height: 8, borderRadius: 2, background: item.color, border: "1px solid rgba(255,255,255,0.1)" }} />
-            <span style={{ fontSize: "0.7rem", color: "rgba(240,237,232,0.4)" }}>{item.label}</span>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
