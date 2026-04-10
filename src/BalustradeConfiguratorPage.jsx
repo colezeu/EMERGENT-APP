@@ -35,7 +35,8 @@ export default function BalustradeConfiguratorPage() {
     await new Promise(r => setTimeout(r, 600));
     const len = parseFloat(dims.length) || 0;
     const h   = parseFloat(dims.height)  || 0;
-    const area = len * h;
+    const skirt = hardware === "butoni" ? 0.35 : 0;
+    const area = len * (h + skirt);
     const hwPrice      = len  * p.hardwareTypes[hardware].pricePerMeter;
     const profExtra    = showProfileShape ? len * (p.profileShapes[profileShape]?.pricePerMeter || 0) : 0;
     const glassPrice   = area * p.glassTypes[glassType].pricePerSqm;
