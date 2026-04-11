@@ -123,18 +123,18 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
     }
 
     // MINI-MONTANTI
-    if (mountingType === "mini-montanti") {
-      [0.08, length-0.1].forEach(x => {
-        box(x-0.013, skirt+height*0.23, -0.01, 0.025, height*0.44, 0.02, inoxTop, inox, inoxSide, inoxStroke);
-      });
-    }
+if (mountingType === "mini-montanti") {
+  const mH = height * 0.3;
+  const mY = skirt + height * 0.7;
+  [0.06, length - 0.08].forEach(x => {
+    box(x - 0.012, mY - mH * 0.5, -0.01, 0.022, mH, 0.02, inoxTop, inox, inoxSide, inoxStroke);
+  });
+}
 
     // PROFILE
-    if (mountingType === "profile") {
-      box(-0.015, 0, -0.015, 0.03, totalH, 0.03, inoxTop, inox, inoxSide, inoxStroke);
-      box(length-0.015, 0, -0.015, 0.03, totalH, 0.03, inoxTop, inox, inoxSide, inoxStroke);
-      box(-0.015, -0.015, -0.015, length+0.03, 0.03, 0.03, inoxTop, inox, inoxSide, inoxStroke);
-    }
+if (mountingType === "profile") {
+  box(-0.015, -0.015, -0.015, length+0.03, 0.03, 0.03, inoxTop, inox, inoxSide, inoxStroke);
+}
 
     // CANAL
     if (mountingType === "embedded") {
