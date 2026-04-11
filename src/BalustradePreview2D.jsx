@@ -121,15 +121,15 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
         });
       }
     }
-// MINI-MONTANTI - 2 per panou, la capetele fiecarui panou
+// MINI-MONTANTI - 2 per panou, la margini, jumatate in sticla jumatate sub
 if (mountingType === "mini-montanti") {
-  const mH = height * 0.3;
-  const mY = skirt + height * 0.7;
+  const mH = height * 0.25;
+  const mY = skirt + height * 0.55;
   for (let i = 0; i < panelCount; i++) {
-    const x1 = i * pW + 0.06;
-    const x2 = i * pW + pW - 0.08;
+    const x1 = i * pW + 0.03;
+    const x2 = (i + 1) * pW - 0.05;
     [x1, x2].forEach(x => {
-      box(x - 0.012, mY - mH * 0.5, -0.01, 0.022, mH, 0.02, inoxTop, inox, inoxSide, inoxStroke);
+      box(x - 0.012, mY, -0.01, 0.022, mH, 0.02, inoxTop, inox, inoxSide, inoxStroke);
     });
   }
 }
