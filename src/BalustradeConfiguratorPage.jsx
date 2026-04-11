@@ -37,11 +37,11 @@ export default function BalustradeConfiguratorPage() {
     const h   = parseFloat(dims.height)  || 0;
     const skirt = hardware === "butoni" ? 0.35 : 0;
     const area = len * (h + skirt);
-    const hwPrice      = len  * p.hardwareTypes[hardware].pricePerMeter;
-    const profExtra    = showProfileShape ? len * (p.profileShapes[profileShape]?.pricePerMeter || 0) : 0;
-    const glassPrice   = area * p.glassTypes[glassType].pricePerSqm;
-    const handrailP    = handrail !== "none" ? len * p.options[handrail].pricePerMeter : 0;
-    const ledP         = includeLed ? p.options.led.price : 0;
+    const hwPrice   = len * p.hardwareTypes[hardware].pricePerMeter;
+    const profExtra = showProfileShape ? len * (p.profileShapes[profileShape]?.pricePerMeter || 0) : 0;
+    const glassPrice = area * p.glassTypes[glassType].pricePerSqm;
+    const handrailP  = handrail !== "none" ? len * p.options[handrail].pricePerMeter : 0;
+    const ledP       = includeLed ? p.options.led.price : 0;
     const raw = p.basePrice + hwPrice + profExtra + glassPrice + handrailP + ledP;
     const { subtotal, vat, total } = calcQuote(raw, vatRate);
     setQuote({ area:area.toFixed(2), hwPrice:Math.round(hwPrice+profExtra), glassPrice:Math.round(glassPrice), handrailP:Math.round(handrailP), ledP, subtotal, vat, total });
@@ -61,7 +61,7 @@ export default function BalustradeConfiguratorPage() {
           <SectionCard num="01" label="Dimensiuni">
             <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:16 }}>
               <NumberInput label="Lungime (m)" value={dims.length} onChange={v=>setDims(d=>({...d,length:v}))} placeholder="Ex: 5.0" />
-              <NumberInput label="Înălțime (m)" value={dims.height} onChange={v=>setDims(d=>({...d,height:v}))} placeholder="Ex: 1.1" step="0.05" />
+              <NumberInput label="Înălțime (m)" value={dims.height} onChange={v=>setDims(d=>({...d,height:v}))} placeholder="Ex: 0.9" step="0.05" />
             </div>
           </SectionCard>
 
@@ -98,9 +98,9 @@ export default function BalustradeConfiguratorPage() {
 
           <SectionCard num="05" label="Accesorii (opționale)">
             {[
-              { key:"none",         label:"Fără mână curentă", desc:"", price:"—" },
-              { key:"handrail",     label:p.options.handrail.name,       desc:p.options.handrail.desc,       price:`${p.options.handrail.pricePerMeter}€/m` },
-              { key:"handrail-slim",label:p.options["handrail-slim"].name, desc:p.options["handrail-slim"].desc, price:`${p.options["handrail-slim"].pricePerMeter}€/m` },
+              { key:"none",          label:"Fără mână curentă",             desc:"",                                price:"—" },
+              { key:"handrail",      label:p.options.handrail.name,         desc:p.options.handrail.desc,           price:`${p.options.handrail.pricePerMeter}€/m` },
+              { key:"handrail-slim", label:p.options["handrail-slim"].name, desc:p.options["handrail-slim"].desc,   price:`${p.options["handrail-slim"].pricePerMeter}€/m` },
             ].map(o => (
               <OptionBtn key={o.key} selected={handrail===o.key} onClick={() => setHandrail(o.key)} label={o.label} desc={o.desc} price={o.price} />
             ))}
@@ -110,19 +110,19 @@ export default function BalustradeConfiguratorPage() {
         </div>
 
         <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
-          <PreviewBox>
+          <PreviewBox title="Previzualizare 3D">
             <BalustradePreview3D dimensions={dims} glassType={glassType} mountingType={
               hardware==="butoni" ? "clips" : hardware==="mini-montanti" ? "mini-montanti" : hardware==="profil-pardoseala" ? "embedded" : "profile"
             } includeHandrail={handrail !== "none"} includeLed={includeLed} />
-          <PreviewBox title="Previzualizare 3D">
+          </PreviewBox>
           <QuoteSidebar quote={quote} isFormValid={isValid} calculating={calculating}
             onCalculate={calculate} onReset={() => setQuote(null)} onSolicita={() => setShowModal(true)}
             lines={quote ? [
               { label:"Suprafață", value:`${quote.area} m²` },
               { label:"Feronerie", value:`${quote.hwPrice}€` },
-              { label:"Sticlă", value:`${quote.glassPrice}€` },
+              { label:"Sticlă",   value:`${quote.glassPrice}€` },
               quote.handrailP > 0 && { label:"Mână curentă", value:`+${quote.handrailP}€`, accent:true },
-              quote.ledP > 0 && { label:"LED", value:`+${quote.ledP}€`, accent:true },
+              quote.ledP > 0      && { label:"LED",           value:`+${quote.ledP}€`,      accent:true },
             ] : []}
           />
         </div>
