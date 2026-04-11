@@ -20,40 +20,35 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
     ctx.fillRect(0, 0, W, H);
 
     const totalH = height + skirt;
-
-    // Rotatie fixa
-    const angleY = 0.5;  // rotatie orizontala
-    const angleX = 0.2;  // inclinare verticala
+    const angleY = 0.5;
+    const angleX = 0.2;
 
     const project = (x, y, z) => {
-      // Centram obiectul
       const cx = x - length / 2;
       const cy = y - totalH / 2;
       const cz = z;
-
-      // Rotatie Y
       const rx = cx * Math.cos(angleY) + cz * Math.sin(angleY);
       const rz = -cx * Math.sin(angleY) + cz * Math.cos(angleY);
-
-      // Rotatie X
       const ry = cy * Math.cos(angleX) - rz * Math.sin(angleX);
       const rz2 = cy * Math.sin(angleX) + rz * Math.cos(angleX);
-
-      // Proiectie perspectiva
       const dist = 6;
       const scale = dist / (dist + rz2);
-      const px = W / 2 + rx * scale * 90;
-      const py = H / 2 - ry * scale * 90;
-      return [px, py];
+      return [W / 2 + rx * scale * 90, H / 2 - ry * scale * 90];
     };
 
-    const face = (pts, fill, stroke, sw = 1) => {
+    const face = (pts, fill, stroke, sw = 1, dash = []) => {
       ctx.beginPath();
       ctx.moveTo(...pts[0]);
       pts.slice(1).forEach(p => ctx.lineTo(...p));
       ctx.closePath();
       if (fill) { ctx.fillStyle = fill; ctx.fill(); }
-      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = sw; ctx.stroke(); }
+      if (stroke) {
+        ctx.strokeStyle = stroke;
+        ctx.lineWidth = sw;
+        ctx.setLineDash(dash);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
     };
 
     const box = (x, y, z, w, h, d, cTop, cFront, cSide, stroke) => {
@@ -62,31 +57,50 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
       face([project(x+w,y,z), project(x+w,y,z+d), project(x+w,y+h,z+d), project(x+w,y+h,z)], cSide, stroke, 0.8);
     };
 
-    // Pardoseala
-    face([
-      project(-0.2, 0, -0.1), project(length+0.2, 0, -0.1),
-      project(length+0.2, 0, 0.15), project(-0.2, 0, 0.15)
-    ], "#1a1d26", "rgba(200,169,110,0.2)", 0.5);
-
+    const inox = "rgba(200,169,110,0.9)";
+    const inoxTop = "rgba(220,190,130,0.9)";
+    const inoxSide = "rgba(160,130,80,0.9)";
+    const inoxStroke = "rgba(230,200,140,0.6)";
     const glassAlpha = glassType === "extraclar" ? 0.22 : glassType === "10mm" ? 0.28 : 0.35;
     const glassFront = `rgba(180,220,255,${glassAlpha})`;
     const glassTop   = `rgba(180,220,255,${glassAlpha * 0.6})`;
     const glassSide  = `rgba(180,220,255,${glassAlpha * 0.4})`;
     const glassStroke = "rgba(180,220,255,0.6)";
-    const inox = "rgba(200,169,110,0.9)";
-    const inoxTop = "rgba(220,190,130,0.9)";
-    const inoxSide = "rgba(160,130,80,0.9)";
-    const inoxStroke = "rgba(230,200,140,0.6)";
+
+    // Pardoseala
+    face([
+      project(-0.2,0,-0.1), project(length+0.2,0,-0.1),
+      project(length+0.2,0,0.15), project(-0.2,0,0.15)
+    ], "#1a1d26", "rgba(200,169,110,0.2)", 0.5);
 
     // Panouri sticla
     for (let i = 0; i < panelCount; i++) {
       box(i*pW+0.01, 0, -0.005, pW-0.02, totalH, 0.01, glassTop, glassFront, glassSide, glassStroke);
     }
 
-    // Separatori
+    // Separatori panouri
     for (let i = 1; i < panelCount; i++) {
       box(i*pW-0.008, 0, -0.01, 0.016, totalH, 0.02,
         "rgba(150,190,210,0.5)", "rgba(150,190,210,0.4)", "rgba(120,160,180,0.4)", "rgba(180,220,255,0.3)");
+    }
+
+    // Linie delimitare fusta
+    if (hasSkirt) {
+      const p1 = project(0, skirt, 0);
+      const p2 = project(length, skirt, 0);
+      ctx.beginPath();
+      ctx.moveTo(...p1);
+      ctx.lineTo(...p2);
+      ctx.strokeStyle = "rgba(180,220,255,0.6)";
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      // Eticheta fusta
+      const mid = project(length * 0.85, skirt / 2, 0);
+      ctx.fillStyle = "rgba(200,169,110,0.6)";
+      ctx.font = "9px DM Sans";
+      ctx.fillText("350mm", mid[0] + 6, mid[1]);
     }
 
     // BUTONI
