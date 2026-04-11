@@ -29,13 +29,20 @@ export default function BalustradeConfiguratorPage() {
   const showProfileShape = hardware === "profil" || hardware === "profil-pardoseala";
   const isValid = dims.length && parseFloat(dims.length) > 0;
 
+  // Skirt logic:
+  // butoni = 0.35m
+  // profil V = 0.10m
+  // altele = 0
+  const skirt = hardware === "butoni" ? 0.35
+    : (hardware === "profil" && profileShape === "V") ? 0.10
+    : 0;
+
   const calculate = async () => {
     if (!p) return;
     setCalculating(true);
     await new Promise(r => setTimeout(r, 600));
     const len = parseFloat(dims.length) || 0;
-    const h   = parseFloat(dims.height)  || 0;
-    const skirt = hardware === "butoni" ? 0.35 : 0;
+    const h   = parseFloat(dims.height) || 0;
     const area = len * (h + skirt);
     const hwPrice   = len * p.hardwareTypes[hardware].pricePerMeter;
     const profExtra = showProfileShape ? len * (p.profileShapes[profileShape]?.pricePerMeter || 0) : 0;
@@ -49,6 +56,11 @@ export default function BalustradeConfiguratorPage() {
   };
 
   if (!p) return <PageLoader />;
+
+  const mountingType = hardware === "butoni" ? "clips"
+    : hardware === "mini-montanti" ? "mini-montanti"
+    : hardware === "profil-pardoseala" ? "embedded"
+    : "profile";
 
   return (
     <div style={{ minHeight:"100vh", background:"#0f1117", color:"#f0ede8" }}>
@@ -98,9 +110,9 @@ export default function BalustradeConfiguratorPage() {
 
           <SectionCard num="05" label="Accesorii (opționale)">
             {[
-              { key:"none",          label:"Fără mână curentă",             desc:"",                                price:"—" },
-              { key:"handrail",      label:p.options.handrail.name,         desc:p.options.handrail.desc,           price:`${p.options.handrail.pricePerMeter}€/m` },
-              { key:"handrail-slim", label:p.options["handrail-slim"].name, desc:p.options["handrail-slim"].desc,   price:`${p.options["handrail-slim"].pricePerMeter}€/m` },
+              { key:"none",          label:"Fără mână curentă",             desc:"",                              price:"—" },
+              { key:"handrail",      label:p.options.handrail.name,         desc:p.options.handrail.desc,         price:`${p.options.handrail.pricePerMeter}€/m` },
+              { key:"handrail-slim", label:p.options["handrail-slim"].name, desc:p.options["handrail-slim"].desc, price:`${p.options["handrail-slim"].pricePerMeter}€/m` },
             ].map(o => (
               <OptionBtn key={o.key} selected={handrail===o.key} onClick={() => setHandrail(o.key)} label={o.label} desc={o.desc} price={o.price} />
             ))}
@@ -111,9 +123,15 @@ export default function BalustradeConfiguratorPage() {
 
         <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
           <PreviewBox title="Previzualizare 3D">
-            <BalustradePreview3D dimensions={dims} glassType={glassType} mountingType={
-              hardware==="butoni" ? "clips" : hardware==="mini-montanti" ? "mini-montanti" : hardware==="profil-pardoseala" ? "embedded" : "profile"
-            } includeHandrail={handrail !== "none"} includeLed={includeLed} />
+            <BalustradePreview3D
+              dimensions={dims}
+              glassType={glassType}
+              mountingType={mountingType}
+              profileShape={profileShape}
+              skirtOverride={skirt}
+              includeHandrail={handrail !== "none"}
+              includeLed={includeLed}
+            />
           </PreviewBox>
           <QuoteSidebar quote={quote} isFormValid={isValid} calculating={calculating}
             onCalculate={calculate} onReset={() => setQuote(null)} onSolicita={() => setShowModal(true)}
