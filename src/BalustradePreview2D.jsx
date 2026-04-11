@@ -121,13 +121,13 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
         });
       }
     }
-// MINI-MONTANTI - stalpi verticali subtiri, sticla sta intre ei
+// MINI-MONTANTI - blocuri mici patrate la baza, jumatate sub pardoseala
 if (mountingType === "mini-montanti") {
   for (let i = 0; i < panelCount; i++) {
-    const x1 = i * pW + 0.01;
-    const x2 = (i + 1) * pW - 0.01;
+    const x1 = i * pW + 0.04;
+    const x2 = (i + 1) * pW - 0.06;
     [x1, x2].forEach(x => {
-      box(x - 0.008, -0.05, -0.008, 0.016, totalH + 0.06, 0.016, inoxTop, inox, inoxSide, inoxStroke);
+      box(x - 0.025, -0.05, -0.02, 0.05, 0.1, 0.04, inoxTop, inox, inoxSide, inoxStroke);
     });
   }
 }
