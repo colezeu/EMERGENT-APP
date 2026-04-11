@@ -121,21 +121,18 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
         });
       }
     }
-
-    // MINI-MONTANTI
+// MINI-MONTANTI - 2 per panou, la capetele fiecarui panou
 if (mountingType === "mini-montanti") {
   const mH = height * 0.3;
   const mY = skirt + height * 0.7;
-  [0.06, length - 0.08].forEach(x => {
-    box(x - 0.012, mY - mH * 0.5, -0.01, 0.022, mH, 0.02, inoxTop, inox, inoxSide, inoxStroke);
-  });
+  for (let i = 0; i < panelCount; i++) {
+    const x1 = i * pW + 0.06;
+    const x2 = i * pW + pW - 0.08;
+    [x1, x2].forEach(x => {
+      box(x - 0.012, mY - mH * 0.5, -0.01, 0.022, mH, 0.02, inoxTop, inox, inoxSide, inoxStroke);
+    });
+  }
 }
-
-    // PROFILE
-if (mountingType === "profile") {
-  box(-0.015, -0.015, -0.015, length+0.03, 0.03, 0.03, inoxTop, inox, inoxSide, inoxStroke);
-}
-
     // CANAL
     if (mountingType === "embedded") {
       box(-0.03, -0.06, -0.02, length+0.06, 0.06, 0.04, inoxTop, inox, inoxSide, inoxStroke);
