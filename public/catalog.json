@@ -10,8 +10,8 @@
           "desc": "Panou drept, standard"
         },
         "forma": {
-          "name": "Sticlă Formă (curbă pe rampă)",
-          "desc": "Tăiat pe unghi / curbă"
+          "name": "Sticlă Formă (pe rampă)",
+          "desc": "Tăiat pe unghi"
         }
       },
       "hardwareTypes": {
