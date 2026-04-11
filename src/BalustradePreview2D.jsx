@@ -190,8 +190,7 @@ for (let i = 0; i < panelCount; i++) {
       box(0, skirt+0.01, 0.006, length, 0.012, 0.008,
         "rgba(255,220,80,0.9)", "rgba(255,220,80,0.8)", "rgba(255,200,50,0.7)", "rgba(255,240,100,0.9)");
     }
-
-  }, [length, height, glassType, mountingType, profileShape, skirt, includeHandrail, includeLed]);
+}, [length, height, glassType, mountingType, profileShape, skirt, glassShape, includeHandrail, includeLed]);
 
   const skirtLabel = skirt === 0.35 ? "Fustă 350mm" : skirt === 0.10 ? "Fustă 100mm" : null;
 
