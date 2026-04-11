@@ -70,7 +70,7 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
     ], "#1a1d26", "rgba(200,169,110,0.2)", 0.5);
 
     // Panouri sticla
-const isRampa = dimensions.glassShape === "forma";
+const isRampa = glassShape === "forma";
 for (let i = 0; i < panelCount; i++) {
   if (isRampa) {
     // Dreptunghi intreg (pretul se calculeaza pe el) - contur punctat
