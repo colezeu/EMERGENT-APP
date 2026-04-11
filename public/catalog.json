@@ -11,7 +11,7 @@
         },
         "forma": {
           "name": "Sticlă Formă (pe rampă)",
-          "desc": "Tăiat pe unghi"
+          "desc": "Tăiată pe unghi"
         }
       },
       "hardwareTypes": {
@@ -19,11 +19,6 @@
           "name": "Cu Butoni Inox",
           "pricePerMeter": 155,
           "desc": "Puncte de fixare, design minimalist"
-        },
-        "profil": {
-          "name": "Cu Profil",
-          "pricePerMeter": 180,
-          "desc": "Profil U/V/L la bază sau lateral"
         },
         "mini-montanti": {
           "name": "Cu Mini-Montanți",
@@ -51,27 +46,21 @@
         }
       },
       "glassTypes": {
-        "8mm": {
-          "name": "Sticlă Laminată 8mm",
+        "662mm": {
+          "name": "Sticlă Securizată/Laminată 662 (13mm)",
           "pricePerSqm": 150,
-          "desc": "Laminat 44.2, ideal interior"
+          "desc": "Laminat 66.2, ideal interior rezidențial"
         },
-        "10mm": {
-          "name": "Sticlă Securizată 10mm",
+        "882mm": {
+          "name": "Sticlă Securizată/Laminată 882 (17mm)",
           "pricePerSqm": 200,
           "desc": "Standard exterior, rezistență ridicată"
-        },
-        "extraclar": {
-          "name": "Sticlă Extra Clară",
-          "pricePerSqm": 280,
-          "desc": "Transparență maximă, fără nuanță verzuie"
-        }
       },
       "options": {
         "handrail": {
           "name": "Mână Curentă Inox",
           "pricePerMeter": 45,
-          "desc": "Rotundă Ø42mm, șlefuită satinat"
+          "desc": "Rotundă Ø42mm, satinat"
         },
         "handrail-slim": {
           "name": "Mână Curentă Slim (structurală)",
