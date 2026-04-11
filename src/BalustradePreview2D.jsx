@@ -121,15 +121,13 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
         });
       }
     }
-// MINI-MONTANTI - 2 per panou, la margini, jumatate in sticla jumatate sub
+// MINI-MONTANTI - stalpi verticali subtiri, sticla sta intre ei
 if (mountingType === "mini-montanti") {
-  const mH = height * 0.25;
-  const mY = skirt + height * 0.55;
   for (let i = 0; i < panelCount; i++) {
-    const x1 = i * pW + 0.03;
-    const x2 = (i + 1) * pW - 0.05;
+    const x1 = i * pW + 0.01;
+    const x2 = (i + 1) * pW - 0.01;
     [x1, x2].forEach(x => {
-      box(x - 0.012, mY, -0.01, 0.022, mH, 0.02, inoxTop, inox, inoxSide, inoxStroke);
+      box(x - 0.008, -0.05, -0.008, 0.016, totalH + 0.06, 0.016, inoxTop, inox, inoxSide, inoxStroke);
     });
   }
 }
