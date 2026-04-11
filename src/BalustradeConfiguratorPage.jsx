@@ -131,6 +131,7 @@ export default function BalustradeConfiguratorPage() {
               skirtOverride={skirt}
               includeHandrail={handrail !== "none"}
               includeLed={includeLed}
+              glassShape={glassShape}
             />
           </PreviewBox>
           <QuoteSidebar quote={quote} isFormValid={isValid} calculating={calculating}
