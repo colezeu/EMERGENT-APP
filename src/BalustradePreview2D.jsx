@@ -71,10 +71,37 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
     ], "#1a1d26", "rgba(200,169,110,0.2)", 0.5);
 
     // Panouri sticla
-    for (let i = 0; i < panelCount; i++) {
-      box(i*pW+0.01, 0, -0.005, pW-0.02, totalH, 0.01, glassTop, glassFront, glassSide, glassStroke);
-    }
+const isRampa = dimensions.glassShape === "forma";
+for (let i = 0; i < panelCount; i++) {
+  if (isRampa) {
+    // Dreptunghi intreg (pretul se calculeaza pe el) - contur punctat
+    face([
+      project(i*pW+0.01, 0, -0.005),
+      project(i*pW+pW-0.01, 0, -0.005),
+      project(i*pW+pW-0.01, totalH, -0.005),
+      project(i*pW+0.01, totalH, -0.005),
+    ], null, "rgba(180,220,255,0.2)", 0.8, [4,3]);
 
+    // Forma reala - paralelogram (sticla in urcare, taiat diagonal)
+    // stanga jos -> dreapta jos -> dreapta sus (mai inalt) -> stanga sus (mai jos)
+    const rampOffset = totalH * 0.35; // cat urca rampa
+    face([
+      project(i*pW+0.01,    0,           -0.005),
+      project(i*pW+pW-0.01, 0,           -0.005),
+      project(i*pW+pW-0.01, totalH,      -0.005),
+      project(i*pW+0.01,    totalH - rampOffset, -0.005),
+    ], glassFront, glassStroke, 1);
+    // Top
+    face([
+      project(i*pW+0.01,    totalH - rampOffset, -0.005),
+      project(i*pW+pW-0.01, totalH,      -0.005),
+      project(i*pW+pW-0.01, totalH,      -0.005 + 0.01),
+      project(i*pW+0.01,    totalH - rampOffset, -0.005 + 0.01),
+    ], glassTop, glassStroke, 0.5);
+  } else {
+    box(i*pW+0.01, 0, -0.005, pW-0.02, totalH, 0.01, glassTop, glassFront, glassSide, glassStroke);
+  }
+}
     // Separatori panouri
     for (let i = 1; i < panelCount; i++) {
       box(i*pW-0.008, 0, -0.01, 0.016, totalH, 0.02,
