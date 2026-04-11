@@ -1,12 +1,15 @@
 import { useEffect, useRef } from "react";
 
-export default function BalustradePreview3D({ dimensions, glassType, mountingType, includeHandrail, includeLed }) {
+export default function BalustradePreview3D({ dimensions, glassType, mountingType, profileShape, skirtOverride, includeHandrail, includeLed }) {
   const canvasRef = useRef(null);
 
   const length = parseFloat(dimensions.length) || 3;
   const height = parseFloat(dimensions.height) || 0.9;
-  const hasSkirt = mountingType === "clips";
-  const skirt = hasSkirt ? 0.35 : 0;
+  const skirt = skirtOverride !== undefined ? skirtOverride
+    : mountingType === "clips" ? 0.35
+    : (mountingType === "profile" && profileShape === "V") ? 0.10
+    : 0;
+  const hasSkirt = skirt > 0;
   const panelCount = Math.ceil(length / 1.1);
   const pW = length / panelCount;
 
@@ -32,8 +35,8 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
       const ry = cy * Math.cos(angleX) - rz * Math.sin(angleX);
       const rz2 = cy * Math.sin(angleX) + rz * Math.cos(angleX);
       const dist = 6;
-      const scale = dist / (dist + rz2);
-      return [W / 2 + rx * scale * 90, H / 2 - ry * scale * 90];
+      const sc = dist / (dist + rz2);
+      return [W / 2 + rx * sc * 90, H / 2 - ry * sc * 90];
     };
 
     const face = (pts, fill, stroke, sw = 1, dash = []) => {
@@ -42,13 +45,7 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
       pts.slice(1).forEach(p => ctx.lineTo(...p));
       ctx.closePath();
       if (fill) { ctx.fillStyle = fill; ctx.fill(); }
-      if (stroke) {
-        ctx.strokeStyle = stroke;
-        ctx.lineWidth = sw;
-        ctx.setLineDash(dash);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = sw; ctx.setLineDash(dash); ctx.stroke(); ctx.setLineDash([]); }
     };
 
     const box = (x, y, z, w, h, d, cTop, cFront, cSide, stroke) => {
@@ -89,21 +86,19 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
       const p1 = project(0, skirt, 0);
       const p2 = project(length, skirt, 0);
       ctx.beginPath();
-      ctx.moveTo(...p1);
-      ctx.lineTo(...p2);
+      ctx.moveTo(...p1); ctx.lineTo(...p2);
       ctx.strokeStyle = "rgba(180,220,255,0.6)";
       ctx.lineWidth = 1.5;
       ctx.setLineDash([5, 3]);
       ctx.stroke();
       ctx.setLineDash([]);
-      // Eticheta fusta
       const mid = project(length * 0.85, skirt / 2, 0);
       ctx.fillStyle = "rgba(200,169,110,0.6)";
       ctx.font = "9px DM Sans";
-      ctx.fillText("350mm", mid[0] + 6, mid[1]);
+      ctx.fillText(skirt === 0.35 ? "350mm" : "100mm", mid[0] + 6, mid[1]);
     }
 
-    // BUTONI
+    // BUTONI INOX
     if (mountingType === "clips") {
       for (let i = 0; i < panelCount; i++) {
         [
@@ -121,17 +116,40 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
         });
       }
     }
-// MINI-MONTANTI - blocuri mici patrate la baza, jumatate sub pardoseala
-if (mountingType === "mini-montanti") {
-  for (let i = 0; i < panelCount; i++) {
-    const x1 = i * pW + 0.15;
-    const x2 = (i + 1) * pW - 0.15;
-    [x1, x2].forEach(x => {
-      box(x - 0.025, -0.05, -0.02, 0.05, 0.1, 0.04, inoxTop, inox, inoxSide, inoxStroke);
-    });
-  }
-}
-    // CANAL
+
+    // MINI-MONTANTI - blocuri mici patrate la baza, jumatate sub pardoseala
+    if (mountingType === "mini-montanti") {
+      for (let i = 0; i < panelCount; i++) {
+        const x1 = i * pW + pW * 0.15;
+        const x2 = (i + 1) * pW - pW * 0.15;
+        [x1, x2].forEach(x => {
+          box(x-0.025, -0.05, -0.02, 0.05, 0.1, 0.04, inoxTop, inox, inoxSide, inoxStroke);
+        });
+      }
+    }
+
+    // PROFILE
+    if (mountingType === "profile") {
+      if (profileShape === "U") {
+        // Canal U in pardoseala - baza + 2 pereti laterali
+        box(-0.02, -0.07, -0.03, length+0.04, 0.04, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+        box(-0.02, -0.07, -0.03, 0.018, 0.13, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+        box(length+0.002, -0.07, -0.03, 0.018, 0.13, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+      }
+      if (profileShape === "L") {
+        // Canal L in pardoseala - baza + 1 perete lateral stanga
+        box(-0.02, -0.07, -0.03, length+0.04, 0.04, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+        box(-0.02, -0.07, -0.03, 0.018, 0.13, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+      }
+      if (profileShape === "V") {
+        // Pe vang ca butonii - fusta 100mm, profil V pe laterale
+        box(-0.02, -0.07, -0.03, length+0.04, 0.04, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+        box(-0.02, -0.07, -0.03, 0.018, skirt+0.07, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+        box(length+0.002, -0.07, -0.03, 0.018, skirt+0.07, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+      }
+    }
+
+    // CANAL INTEGRAT
     if (mountingType === "embedded") {
       box(-0.03, -0.06, -0.02, length+0.06, 0.06, 0.04, inoxTop, inox, inoxSide, inoxStroke);
     }
@@ -147,7 +165,9 @@ if (mountingType === "mini-montanti") {
         "rgba(255,220,80,0.9)", "rgba(255,220,80,0.8)", "rgba(255,200,50,0.7)", "rgba(255,240,100,0.9)");
     }
 
-  }, [length, height, glassType, mountingType, includeHandrail, includeLed]);
+  }, [length, height, glassType, mountingType, profileShape, skirt, includeHandrail, includeLed]);
+
+  const skirtLabel = skirt === 0.35 ? "Fustă 350mm" : skirt === 0.10 ? "Fustă 100mm" : null;
 
   return (
     <div style={{ width:"100%", background:"rgba(255,255,255,0.02)", borderRadius:16, overflow:"hidden", border:"1px solid rgba(255,255,255,0.07)" }}>
@@ -160,9 +180,9 @@ if (mountingType === "mini-montanti") {
           { color:"rgba(180,220,255,0.6)", label:"Sticlă" },
           mountingType==="clips"         && { color:"rgba(200,169,110,0.8)", label:`Butoni (${panelCount*4} buc)` },
           mountingType==="mini-montanti" && { color:"rgba(200,169,110,0.8)", label:"Mini-Montanți" },
-          mountingType==="profile"       && { color:"rgba(200,169,110,0.8)", label:"Profil" },
+          mountingType==="profile"       && { color:"rgba(200,169,110,0.8)", label:`Profil ${profileShape || ""}` },
           mountingType==="embedded"      && { color:"rgba(200,169,110,0.8)", label:"Canal Integrat" },
-          hasSkirt        && { color:"rgba(180,220,255,0.25)", label:"Fustă 350mm" },
+          hasSkirt && skirtLabel         && { color:"rgba(180,220,255,0.25)", label: skirtLabel },
           includeHandrail && { color:"rgba(200,169,110,0.9)", label:"Mână curentă" },
           includeLed      && { color:"rgba(255,220,80,0.8)",  label:"LED" },
         ].filter(Boolean).map((item, i) => (
