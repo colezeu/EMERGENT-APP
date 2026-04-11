@@ -114,7 +114,7 @@ export default function BalustradeConfiguratorPage() {
             <BalustradePreview3D dimensions={dims} glassType={glassType} mountingType={
               hardware==="butoni" ? "clips" : hardware==="mini-montanti" ? "mini-montanti" : hardware==="profil-pardoseala" ? "embedded" : "profile"
             } includeHandrail={handrail !== "none"} includeLed={includeLed} />
-          </PreviewBox>
+          <PreviewBox title="Previzualizare 3D">
           <QuoteSidebar quote={quote} isFormValid={isValid} calculating={calculating}
             onCalculate={calculate} onReset={() => setQuote(null)} onSolicita={() => setShowModal(true)}
             lines={quote ? [
