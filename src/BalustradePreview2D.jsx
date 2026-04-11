@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 
-export default function BalustradePreview3D({ dimensions, glassType, mountingType, profileShape, skirtOverride, includeHandrail, includeLed }) {
+export default function BalustradePreview3D({ dimensions, glassType, mountingType, profileShape, skirtOverride, glassShape, includeHandrail, includeLed }) {
   const canvasRef = useRef(null);
-
   const length = parseFloat(dimensions.length) || 3;
   const height = parseFloat(dimensions.height) || 0.9;
   const skirt = skirtOverride !== undefined ? skirtOverride
