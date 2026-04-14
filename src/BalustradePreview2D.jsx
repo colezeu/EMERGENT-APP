@@ -12,7 +12,6 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
   const hasSkirt = skirt > 0;
   const panelCount = Math.ceil(length / 1.1);
   const pW = length / panelCount;
-
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
