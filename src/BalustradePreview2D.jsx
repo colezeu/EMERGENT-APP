@@ -1,202 +1,228 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 
-export default function BalustradePreview3D({ 
-  dimensions, 
-  glassType, 
-  mountingType, 
-  profileShape, 
-  skirtOverride, 
-  glassShape, 
-  includeHandrail, 
-  includeLed 
-}) {
+export default function BalustradePreview3D({ dimensions, glassType, mountingType, profileShape, skirtOverride, includeHandrail, includeLed }) {
   const canvasRef = useRef(null);
-  const [rotation, setRotation] = useState({ x: 0.2, y: 0.5 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
-  
+
   const length = parseFloat(dimensions.length) || 3;
   const height = parseFloat(dimensions.height) || 0.9;
-  
-  // Calcul fustă
   const skirt = skirtOverride !== undefined ? skirtOverride
     : mountingType === "clips" ? 0.35
     : (mountingType === "profile" && profileShape === "V") ? 0.10
     : 0;
-  
   const hasSkirt = skirt > 0;
   const panelCount = Math.ceil(length / 1.1);
-  const panelWidth = length / panelCount;
-
-  // Materiale și culori
-  const materials = {
-    inox: { 
-      main: "rgba(200,169,110,0.95)", 
-      top: "rgba(220,190,130,0.95)", 
-      side: "rgba(160,130,80,0.95)",
-      stroke: "rgba(230,200,140,0.8)",
-      highlight: "rgba(255,220,180,0.6)"
-    },
-    glass: {
-      extraclar: { alpha: 0.15, strokeAlpha: 0.5 },
-      standard: { alpha: 0.35, strokeAlpha: 0.6 },
-      opaque: { alpha: 0.7, strokeAlpha: 0.8 }
-    }
-  };
-
-  const glassAlpha = glassType === "extraclar" ? materials.glass.extraclar.alpha 
-    : glassType === "10mm" ? materials.glass.standard.alpha 
-    : materials.glass.opaque.alpha;
-
-  // Proiecție 3D îmbunătățită
-  const project = (x, y, z, canvasWidth, canvasHeight) => {
-    const totalH = height + skirt;
-    const cx = x - length / 2;
-    const cy = y - totalH / 2;
-    const cz = z;
-    
-    // Rotație Y (orizontală)
-    const rx = cx * Math.cos(rotation.y) + cz * Math.sin(rotation.y);
-    const rz = -cx * Math.sin(rotation.y) + cz * Math.cos(rotation.y);
-    
-    // Rotație X (verticală)
-    const ry = cy * Math.cos(rotation.x) - rz * Math.sin(rotation.x);
-    const rz2 = cy * Math.sin(rotation.x) + rz * Math.cos(rotation.x);
-    
-    // Perspectivă
-    const dist = 6 + rz2 * 0.1;
-    const sc = 5 / (dist + rz2);
-    return [
-      canvasWidth / 2 + rx * sc * 100,
-      canvasHeight / 2 - ry * sc * 100,
-      sc // scale pentru depth sorting
-    ];
-  };
+  const pW = length / panelCount;
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
-    
     const ctx = canvas.getContext("2d");
     const W = canvas.width, H = canvas.height;
-    
-    // Clear
-    ctx.fillStyle = "#0a0c12";
-    ctx.fillRect(0, 0, W, H);
-    
-    // Gradient background
-    const bgGrad = ctx.createLinearGradient(0, 0, 0, H);
-    bgGrad.addColorStop(0, "#0f1117");
-    bgGrad.addColorStop(1, "#1a1d26");
-    ctx.fillStyle = bgGrad;
+    ctx.clearRect(0, 0, W, H);
+    ctx.fillStyle = "#0f1117";
     ctx.fillRect(0, 0, W, H);
 
-    // Funcții helper
-    const face = (points, fill, stroke, lineWidth = 1, dash = []) => {
-      if (points.length < 3) return;
-      ctx.beginPath();
-      ctx.moveTo(points[0][0], points[0][1]);
-      points.slice(1).forEach(p => ctx.lineTo(p[0], p[1]));
-      ctx.closePath();
-      
-      if (fill) {
-        ctx.fillStyle = fill;
-        ctx.fill();
-      }
-      if (stroke) {
-        ctx.strokeStyle = stroke;
-        ctx.lineWidth = lineWidth;
-        ctx.setLineDash(dash);
-        ctx.stroke();
-        ctx.setLineDash([]);
-      }
-    };
-
-    const drawBox = (x, y, z, w, h, d, colors, stroke) => {
-      const p1 = project(x, y, z, W, H);
-      const p2 = project(x+w, y, z, W, H);
-      const p3 = project(x+w, y+h, z, W, H);
-      const p4 = project(x, y+h, z, W, H);
-      const p5 = project(x, y, z+d, W, H);
-      const p6 = project(x+w, y, z+d, W, H);
-      const p7 = project(x+w, y+h, z+d, W, H);
-      const p8 = project(x, y+h, z+d, W, H);
-      
-      // Fețe cu depth sorting simplu
-      // Față
-      face([p1, p2, p3, p4], colors.front, stroke, 0.8);
-      // Top
-      face([p4, p3, p7, p8], colors.top, stroke, 0.8);
-      // Dreapta
-      face([p2, p6, p7, p3], colors.side, stroke, 0.8);
-      // Stânga
-      face([p1, p4, p8, p5], colors.side, stroke, 0.8);
-    };
-
-    // Grilaj podea (grid)
-    ctx.strokeStyle = "rgba(200,169,110,0.05)";
-    ctx.lineWidth = 1;
-    for (let i = -2; i <= length + 2; i += 0.5) {
-      const p1 = project(i, 0, -0.5, W, H);
-      const p2 = project(i, 0, 0.5, W, H);
-      ctx.beginPath();
-      ctx.moveTo(p1[0], p1[1]);
-      ctx.lineTo(p2[0], p2[1]);
-      ctx.stroke();
-    }
-    for (let i = -0.5; i <= 0.5; i += 0.25) {
-      const p1 = project(-2, 0, i, W, H);
-      const p2 = project(length + 2, 0, i, W, H);
-      ctx.beginPath();
-      ctx.moveTo(p1[0], p1[1]);
-      ctx.lineTo(p2[0], p2[1]);
-      ctx.stroke();
-    }
-
-    // Podea principală (plane)
-    const floorPoints = [
-      project(-0.3, 0, -0.2, W, H),
-      project(length + 0.3, 0, -0.2, W, H),
-      project(length + 0.3, 0, 0.3, W, H),
-      project(-0.3, 0, 0.3, W, H)
-    ];
-    face(floorPoints, "#1a1d26", "rgba(200,169,110,0.15)", 2);
-
-    // Umbra balustradei (sub sticlă)
-    if (mountingType !== "embedded") {
-      const shadowPoints = [
-        project(0.02, 0.01, 0.02, W, H),
-        project(length - 0.02, 0.01, 0.02, W, H),
-        project(length - 0.02, 0.01, 0.08, W, H),
-        project(0.02, 0.01, 0.08, W, H)
-      ];
-      face(shadowPoints, "rgba(0,0,0,0.3)", null);
-    }
-
-    // Panouri sticlă
-    const isRampa = glassShape === "forma";
     const totalH = height + skirt;
-    
-    for (let i = 0; i < panelCount; i++) {
-      const x = i * panelWidth;
-      
-      if (isRampa) {
-        // Formă rampă (paralelogram)
-        const rampOffset = totalH * 0.35;
-        const p1 = project(x + 0.01, 0, -0.005, W, H);
-        const p2 = project(x + panelWidth - 0.01, 0, -0.005, W, H);
-        const p3 = project(x + panelWidth - 0.01, totalH, -0.005, W, H);
-        const p4 = project(x + 0.01, totalH - rampOffset, -0.005, W, H);
-        
-        // Gradient pentru sticlă
-        const grad = ctx.createLinearGradient(p1[0], p1[1], p3[0], p3[1]);
-        grad.addColorStop(0, `rgba(180,220,255,${glassAlpha})`);
-        grad.addColorStop(0.5, `rgba(200,230,255,${glassAlpha * 1.2})`);
-        grad.addColorStop(1, `rgba(180,220,255,${glassAlpha * 0.8})`);
-        
-        face([p1, p2, p3, p4], grad, `rgba(180,220,255,0.7)`, 1.5);
-        
-        // Top rampă
-        const p5 = project(x + 0.01, totalH - rampOffset, -0.005 + 0.01, W, H);
-        const p6 = project(x + panelWidth - 0.01, totalH, -0.005 + 0.01, W, H);
-        face([p4, p3, p6, p5], `rgba(220,240,255,${glassAlpha * 0.5})`, `
+    const angleY = 0.5;
+    const angleX = 0.2;
+
+    const project = (x, y, z) => {
+      const cx = x - length / 2;
+      const cy = y - totalH / 2;
+      const cz = z;
+      const rx = cx * Math.cos(angleY) + cz * Math.sin(angleY);
+      const rz = -cx * Math.sin(angleY) + cz * Math.cos(angleY);
+      const ry = cy * Math.cos(angleX) - rz * Math.sin(angleX);
+      const rz2 = cy * Math.sin(angleX) + rz * Math.cos(angleX);
+      const dist = 6;
+      const sc = dist / (dist + rz2);
+      return [W / 2 + rx * sc * 90, H / 2 - ry * sc * 90];
+    };
+
+    const face = (pts, fill, stroke, sw = 1, dash = []) => {
+      ctx.beginPath();
+      ctx.moveTo(...pts[0]);
+      pts.slice(1).forEach(p => ctx.lineTo(...p));
+      ctx.closePath();
+      if (fill) { ctx.fillStyle = fill; ctx.fill(); }
+      if (stroke) { ctx.strokeStyle = stroke; ctx.lineWidth = sw; ctx.setLineDash(dash); ctx.stroke(); ctx.setLineDash([]); }
+    };
+
+    const box = (x, y, z, w, h, d, cTop, cFront, cSide, stroke) => {
+      face([project(x,y,z), project(x+w,y,z), project(x+w,y+h,z), project(x,y+h,z)], cFront, stroke, 0.8);
+      face([project(x,y+h,z), project(x+w,y+h,z), project(x+w,y+h,z+d), project(x,y+h,z+d)], cTop, stroke, 0.8);
+      face([project(x+w,y,z), project(x+w,y,z+d), project(x+w,y+h,z+d), project(x+w,y+h,z)], cSide, stroke, 0.8);
+    };
+
+    const inox = "rgba(200,169,110,0.9)";
+    const inoxTop = "rgba(220,190,130,0.9)";
+    const inoxSide = "rgba(160,130,80,0.9)";
+    const inoxStroke = "rgba(230,200,140,0.6)";
+    const glassAlpha = glassType === "extraclar" ? 0.22 : glassType === "10mm" ? 0.28 : 0.35;
+    const glassFront = `rgba(180,220,255,${glassAlpha})`;
+    const glassTop   = `rgba(180,220,255,${glassAlpha * 0.6})`;
+    const glassSide  = `rgba(180,220,255,${glassAlpha * 0.4})`;
+    const glassStroke = "rgba(180,220,255,0.6)";
+
+    // Pardoseala
+    face([
+      project(-0.2,0,-0.1), project(length+0.2,0,-0.1),
+      project(length+0.2,0,0.15), project(-0.2,0,0.15)
+    ], "#1a1d26", "rgba(200,169,110,0.2)", 0.5);
+
+    // Panouri sticla
+const isRampa = glassShape === "forma";
+for (let i = 0; i < panelCount; i++) {
+  if (isRampa) {
+    const hLow = totalH * 0.55;  // inaltimea in partea stanga (mai jos)
+    const hHigh = totalH;         // inaltimea in partea dreapta (mai sus)
+
+    // Dreptunghi punctat - suprafata platita
+    face([
+      project(i*pW+0.01, 0,     -0.005),
+      project(i*pW+pW-0.01, 0,  -0.005),
+      project(i*pW+pW-0.01, hHigh, -0.005),
+      project(i*pW+0.01,    hHigh, -0.005),
+    ], null, "rgba(180,220,255,0.25)", 0.8, [4,3]);
+
+    // Forma reala - paralelogram (stanga jos, dreapta sus)
+    face([
+      project(i*pW+0.01,    0,     -0.005),
+      project(i*pW+pW-0.01, 0,     -0.005),
+      project(i*pW+pW-0.01, hHigh, -0.005),
+      project(i*pW+0.01,    hLow,  -0.005),
+    ], glassFront, glassStroke, 1);
+
+    // Top paralelogram
+    face([
+      project(i*pW+0.01,    hLow,  -0.005),
+      project(i*pW+pW-0.01, hHigh, -0.005),
+      project(i*pW+pW-0.01, hHigh, 0.005),
+      project(i*pW+0.01,    hLow,  0.005),
+    ], glassTop, glassStroke, 0.5);
+
+  } else {
+    box(i*pW+0.01, 0, -0.005, pW-0.02, totalH, 0.01, glassTop, glassFront, glassSide, glassStroke);
+  }
+}
+
+    // Separatori panouri
+    for (let i = 1; i < panelCount; i++) {
+      box(i*pW-0.008, 0, -0.01, 0.016, totalH, 0.02,
+        "rgba(150,190,210,0.5)", "rgba(150,190,210,0.4)", "rgba(120,160,180,0.4)", "rgba(180,220,255,0.3)");
+    }
+
+    // Linie delimitare fusta
+    if (hasSkirt) {
+      const p1 = project(0, skirt, 0);
+      const p2 = project(length, skirt, 0);
+      ctx.beginPath();
+      ctx.moveTo(...p1); ctx.lineTo(...p2);
+      ctx.strokeStyle = "rgba(180,220,255,0.6)";
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      const mid = project(length * 0.85, skirt / 2, 0);
+      ctx.fillStyle = "rgba(200,169,110,0.6)";
+      ctx.font = "9px DM Sans";
+      ctx.fillText(skirt === 0.35 ? "350mm" : "100mm", mid[0] + 6, mid[1]);
+    }
+
+    // BUTONI INOX
+    if (mountingType === "clips") {
+      for (let i = 0; i < panelCount; i++) {
+        [
+          { x: i*pW + pW*0.18, y: skirt*0.28 },
+          { x: i*pW + pW*0.18, y: skirt*0.72 },
+          { x: i*pW + pW*0.82, y: skirt*0.28 },
+          { x: i*pW + pW*0.82, y: skirt*0.72 },
+        ].forEach(pos => {
+          const [cx, cy] = project(pos.x, pos.y, 0.012);
+          ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI*2);
+          ctx.fillStyle = "rgba(200,169,110,0.2)"; ctx.fill();
+          ctx.strokeStyle = inox; ctx.lineWidth = 1.5; ctx.stroke();
+          ctx.beginPath(); ctx.arc(cx, cy, 2.2, 0, Math.PI*2);
+          ctx.fillStyle = inox; ctx.fill();
+        });
+      }
+    }
+
+    // MINI-MONTANTI - blocuri mici patrate la baza, jumatate sub pardoseala
+    if (mountingType === "mini-montanti") {
+      for (let i = 0; i < panelCount; i++) {
+        const x1 = i * pW + pW * 0.15;
+        const x2 = (i + 1) * pW - pW * 0.15;
+        [x1, x2].forEach(x => {
+          box(x-0.025, -0.05, -0.02, 0.05, 0.1, 0.04, inoxTop, inox, inoxSide, inoxStroke);
+        });
+      }
+    }
+
+    // PROFILE
+    if (mountingType === "profile") {
+      if (profileShape === "U") {
+        // Canal U in pardoseala - baza + 2 pereti laterali
+        box(-0.02, -0.07, -0.03, length+0.04, 0.04, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+        box(-0.02, -0.07, -0.03, 0.018, 0.13, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+        box(length+0.002, -0.07, -0.03, 0.018, 0.13, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+      }
+      if (profileShape === "L") {
+        // Canal L in pardoseala - baza + 1 perete lateral stanga
+        box(-0.02, -0.07, -0.03, length+0.04, 0.04, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+        box(-0.02, -0.07, -0.03, 0.018, 0.13, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+      }
+      if (profileShape === "V") {
+        // Pe vang ca butonii - fusta 100mm, profil V pe laterale
+        box(-0.02, -0.07, -0.03, length+0.04, 0.04, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+        box(-0.02, -0.07, -0.03, 0.018, skirt+0.07, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+        box(length+0.002, -0.07, -0.03, 0.018, skirt+0.07, 0.06, inoxTop, inox, inoxSide, inoxStroke);
+      }
+    }
+
+    // CANAL INTEGRAT
+    if (mountingType === "embedded") {
+      box(-0.03, -0.06, -0.02, length+0.06, 0.06, 0.04, inoxTop, inox, inoxSide, inoxStroke);
+    }
+
+    // MANA CURENTA
+    if (includeHandrail) {
+      box(-0.08, totalH, -0.022, length+0.16, 0.04, 0.044, inoxTop, inox, inoxSide, inoxStroke);
+    }
+
+    // LED
+    if (includeLed) {
+      box(0, skirt+0.01, 0.006, length, 0.012, 0.008,
+        "rgba(255,220,80,0.9)", "rgba(255,220,80,0.8)", "rgba(255,200,50,0.7)", "rgba(255,240,100,0.9)");
+    }
+
+  }, [length, height, glassType, mountingType, profileShape, skirt, includeHandrail, includeLed]);
+
+  const skirtLabel = skirt === 0.35 ? "Fustă 350mm" : skirt === 0.10 ? "Fustă 100mm" : null;
+
+  return (
+    <div style={{ width:"100%", background:"rgba(255,255,255,0.02)", borderRadius:16, overflow:"hidden", border:"1px solid rgba(255,255,255,0.07)" }}>
+      <div style={{ fontSize:"0.72rem", color:"rgba(240,237,232,0.35)", padding:"10px 0 4px", textAlign:"center", letterSpacing:"0.08em", textTransform:"uppercase" }}>
+        Previzualizare 3D · {panelCount} {panelCount === 1 ? "panou" : "panouri"}
+      </div>
+      <canvas ref={canvasRef} width={340} height={260} style={{ width:"100%", display:"block" }} />
+      <div style={{ display:"flex", gap:12, justifyContent:"center", padding:"8px 12px 12px", flexWrap:"wrap" }}>
+        {[
+          { color:"rgba(180,220,255,0.6)", label:"Sticlă" },
+          mountingType==="clips"         && { color:"rgba(200,169,110,0.8)", label:`Butoni (${panelCount*4} buc)` },
+          mountingType==="mini-montanti" && { color:"rgba(200,169,110,0.8)", label:"Mini-Montanți" },
+          mountingType==="profile"       && { color:"rgba(200,169,110,0.8)", label:`Profil ${profileShape || ""}` },
+          mountingType==="embedded"      && { color:"rgba(200,169,110,0.8)", label:"Canal Integrat" },
+          hasSkirt && skirtLabel         && { color:"rgba(180,220,255,0.25)", label: skirtLabel },
+          includeHandrail && { color:"rgba(200,169,110,0.9)", label:"Mână curentă" },
+          includeLed      && { color:"rgba(255,220,80,0.8)",  label:"LED" },
+        ].filter(Boolean).map((item, i) => (
+          <div key={i} style={{ display:"flex", alignItems:"center", gap:5 }}>
+            <div style={{ width:8, height:8, borderRadius:2, background:item.color, border:"1px solid rgba(255,255,255,0.1)" }}/>
+            <span style={{ fontSize:"0.7rem", color:"rgba(240,237,232,0.4)" }}>{item.label}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
