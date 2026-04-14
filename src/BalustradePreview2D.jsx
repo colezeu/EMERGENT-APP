@@ -70,12 +70,42 @@ export default function BalustradePreview3D({ dimensions, glassType, mountingTyp
       project(length+0.2,0,0.15), project(-0.2,0,0.15)
     ], "#1a1d26", "rgba(200,169,110,0.2)", 0.5);
 
-    // Panouri sticla
+  // Panouri sticla
 const isRampa = glassShape === "forma";
 for (let i = 0; i < panelCount; i++) {
   if (isRampa) {
     const hLow = totalH * 0.55;  // inaltimea in partea stanga (mai jos)
     const hHigh = totalH;         // inaltimea in partea dreapta (mai sus)
+
+    // Dreptunghi punctat - suprafata platita
+    face([
+      project(i*pW+0.01, 0,     -0.005),
+      project(i*pW+pW-0.01, 0,  -0.005),
+      project(i*pW+pW-0.01, hHigh, -0.005),
+      project(i*pW+0.01,    hHigh, -0.005),
+    ], null, "rgba(180,220,255,0.25)", 0.8, [4,3]);
+
+    // Forma reala - paralelogram (stanga jos, dreapta sus)
+    face([
+      project(i*pW+0.01,    0,     -0.005),
+      project(i*pW+pW-0.01, 0,     -0.005),
+      project(i*pW+pW-0.01, hHigh, -0.005),
+      project(i*pW+0.01,    hLow,  -0.005),
+    ], glassFront, glassStroke, 1);
+
+    // Top paralelogram
+    face([
+      project(i*pW+0.01,    hLow,  -0.005),
+      project(i*pW+pW-0.01, hHigh, -0.005),
+      project(i*pW+pW-0.01, hHigh, 0.005),
+      project(i*pW+0.01,    hLow,  0.005),
+    ], glassTop, glassStroke, 0.5);
+
+  } else {
+    box(i*pW+0.01, 0, -0.005, pW-0.02, totalH, 0.01, glassTop, glassFront, glassSide, glassStroke);
+  }
+}
+
 
     // Dreptunghi punctat - suprafata platita
     face([
