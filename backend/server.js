@@ -3,7 +3,7 @@ import cors from "cors";
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: "http://localhost:5173" }));
 app.use(express.json());
 
 app.post("/ai-consultant", async (req, res) => {
@@ -11,32 +11,42 @@ app.post("/ai-consultant", async (req, res) => {
     const { productType, message, currentConfig, conversation } = req.body || {};
 
     const systemPrompt = `
-Ești un consultant comercial pentru produse din sticlă.
-Ajută clientul să aleagă produsul potrivit și să completeze configuratorul.
+Ești un consultant comercial pentru configuratorul de cabine duș Glass Associates.
 
-Reguli:
-- NU calcula prețuri.
-- NU inventa reguli tehnice.
-- Răspunde scurt și clar.
-- Dacă lipsesc date, cere clarificări.
-- Returnează EXCLUSIV JSON valid.
+Rol:
+- ajuți clientul să aleagă produsul potrivit
+- extragi valori pentru configurator
+- NU calculezi prețuri
+- NU inventezi reguli tehnice
 
-Schema:
+Trebuie să returnezi EXCLUSIV JSON valid, în schema:
+
 {
   "reply": "string",
   "missingFields": ["string"],
   "confidence": 0.0,
   "prefill": {
-    "product": "string|null",
-    "subtype": "string|null",
     "width": "number|null",
-    "height": "number|null",
-    "glassType": "string|null",
-    "glassThickness": "string|null",
-    "hardwareFinish": "string|null",
-    "extras": {}
+    "depth": "number|null",
+    "height": "number|string|null",
+    "enclosure": "paravan-fix-profil|paravan-fix-punctual|paravan-mobil|usa-batanta|usa-culisanta-vedere|usa-culisanta-sina|null",
+    "glassType": "8mm|10mm|null",
+    "treatment": "clear|frosted|nano|null",
+    "options": {
+      "towelBar": false,
+      "seat": false,
+      "led": false
+    }
   }
 }
+
+Reguli de interpretare:
+- dacă utilizatorul spune 120x90, interpretează width=1.2 și depth=0.9
+- dacă spune înălțime 2 metri, height="2.0"
+- "ușor de curățat" sugerează treatment="nano"
+- "opac" sau "intimitate" sugerează treatment="frosted"
+- pentru cabină standard elegantă, poți sugera "usa-batanta"
+- dacă lipsesc dimensiuni, cere clarificări
 `;
 
     const ollamaRes = await fetch("http://localhost:11434/api/chat", {
@@ -48,50 +58,4 @@ Schema:
         model: "llama3.2",
         stream: false,
         messages: [
-          { role: "system", content: systemPrompt },
-          {
-            role: "user",
-            content: JSON.stringify({
-              productType,
-              message,
-              currentConfig,
-              conversation,
-            }),
-          },
-        ],
-        options: {
-          temperature: 0.2,
-        },
-        keep_alive: "10m",
-      }),
-    });
-
-    if (!ollamaRes.ok) {
-      const text = await ollamaRes.text();
-      return res.status(500).json({ error: text });
-    }
-
-    const data = await ollamaRes.json();
-    const content = data?.message?.content || "{}";
-
-    let parsed;
-    try {
-      parsed = JSON.parse(content);
-    } catch {
-      parsed = {
-        reply: "Am înțeles parțial cererea, dar nu am putut structura complet datele.",
-        missingFields: [],
-        confidence: 0.3,
-        prefill: {},
-      };
-    }
-
-    return res.json(parsed);
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
-});
-
-app.listen(3001, () => {
-  console.log("Backend running on http://localhost:3001");
 });
