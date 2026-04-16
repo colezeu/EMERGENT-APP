@@ -57,16 +57,4 @@ export default function ShowerConfiguratorPage() {
     if (prefill.glassType && p?.glassTypes?.[prefill.glassType]) {
       setGlassType(prefill.glassType);
     }
-
-    if (prefill.treatment && p?.treatments?.[prefill.treatment]) {
-      setTreatment(prefill.treatment);
-    }
-
-    if (prefill.options) {
-      if (typeof prefill.options.towelBar === "boolean") {
-        setInclTowel(prefill.options.towelBar);
-      }
-      if (typeof prefill.options.seat === "boolean") {
-        setInclSeat(prefill.options.seat);
-      }
 }
