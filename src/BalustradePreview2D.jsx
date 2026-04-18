@@ -73,33 +73,34 @@ export default function BalustradePreview3D({ dimensions, glassType, glassShape,
     // Panouri sticla
     const isRampa = glassShape === "forma";
     for (let i = 0; i < panelCount; i++) {
-      if (isRampa) {
-        const hLeft = totalH * 0.6;
-        const hRight = totalH;
+     if (isRampa) {
+  const hLeft = totalH * 0.55;   // inaltimea stanga (mai jos)
+  const hRight = totalH;          // inaltimea dreapta (mai sus)
 
-        // Dreptunghi punctat - suprafata platita
-        face([
-          project(i*pW+0.01, 0, -0.005),
-          project(i*pW+pW-0.01, 0, -0.005),
-          project(i*pW+pW-0.01, hRight, -0.005),
-          project(i*pW+0.01, hRight, -0.005),
-        ], null, "rgba(180,220,255,0.25)", 0.8, [4,3]);
+  // Dreptunghi punctat - suprafata platita (inaltimea maxima)
+  face([
+    project(i*pW+0.01,    0,      -0.005),
+    project(i*pW+pW-0.01, 0,      -0.005),
+    project(i*pW+pW-0.01, hRight, -0.005),
+    project(i*pW+0.01,    hRight, -0.005),
+  ], null, "rgba(180,220,255,0.25)", 0.8, [4,3]);
 
-        // Forma reala - trapez
-        face([
-          project(i*pW+0.01, 0, -0.005),
-          project(i*pW+pW-0.01, 0, -0.005),
-          project(i*pW+pW-0.01, hRight, -0.005),
-          project(i*pW+0.01, hLeft, -0.005),
-        ], glassFront, glassStroke, 1.5);
+  // Forma reala - trapez (jos orizontal, sus in urcare)
+  face([
+    project(i*pW+0.01,    0,      -0.005),  // stanga jos
+    project(i*pW+pW-0.01, 0,      -0.005),  // dreapta jos
+    project(i*pW+pW-0.01, hRight, -0.005),  // dreapta sus (inalt)
+    project(i*pW+0.01,    hLeft,  -0.005),  // stanga sus (jos)
+  ], glassFront, glassStroke, 1.5);
 
-        // Top diagonal
-        face([
-          project(i*pW+0.01, hLeft, -0.005),
-          project(i*pW+pW-0.01, hRight, -0.005),
-          project(i*pW+pW-0.01, hRight, 0.005),
-          project(i*pW+0.01, hLeft, 0.005),
-        ], glassTop, glassStroke, 0.5);
+  // Muchia superioara inclinata
+  face([
+    project(i*pW+0.01,    hLeft,  -0.005),
+    project(i*pW+pW-0.01, hRight, -0.005),
+    project(i*pW+pW-0.01, hRight,  0.005),
+    project(i*pW+0.01,    hLeft,   0.005),
+  ], glassTop, glassStroke, 0.5);
+}
       } else {
         box(i*pW+0.01, 0, -0.005, pW-0.02, totalH, 0.01, glassTop, glassFront, glassSide, glassStroke);
       }
