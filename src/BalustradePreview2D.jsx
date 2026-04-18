@@ -98,7 +98,7 @@ export default function BalustradePreview3D({ dimensions, glassType, glassShape,
     project(i*pW+pW-0.01, hRight, 0.005),
     project(i*pW+0.01,    hLeft,  0.005),
   ], glassTop, glassStroke, 0.5);
-}      } else {
+  } else {
         box(i * pW + 0.01, 0, -0.005, pW - 0.02, totalH, 0.01, glassTop, glassFront, glassSide, glassStroke);
       }
     }
