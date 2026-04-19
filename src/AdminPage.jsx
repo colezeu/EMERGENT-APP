@@ -3,26 +3,28 @@ import { Download, Lock, LogOut, ChevronDown, ChevronUp } from "lucide-react";
 
 const PASSWORD = "glass2026";
 
-export default function AdminPage() {
-  const [auth, setAuth] = useState(false);
-  const [pass, setPass] = useState("");
-  const [error, setError] = useState(false);
-  const [openSection, setOpenSection] = useState(null);
-  const [catalog, setCatalog] = useState(null);
-  const [loaded, setLoaded] = useState(false);
-
-  const login = () => {
-    if (pass === PASSWORD) {
-      setAuth(true);
-      fetch("/catalog.json").then(r => r.json()).then(d => {
+const login = () => {
+  if (pass === PASSWORD) {
+    fetch("/catalog.json")
+      .then(r => {
+        if (!r.ok) throw new Error("fetch failed");
+        return r.json();
+      })
+      .then(d => {
         setCatalog(d);
         setLoaded(true);
+        setAuth(true);
+      })
+      .catch(err => {
+        console.error("Eroare catalog:", err);
+        setError(true);
+        setTimeout(() => setError(false), 2000);
       });
-    } else {
-      setError(true);
-      setTimeout(() => setError(false), 2000);
-    }
-  };
+  } else {
+    setError(true);
+    setTimeout(() => setError(false), 2000);
+  }
+};
 
   const exportJson = () => {
     const blob = new Blob([JSON.stringify(catalog, null, 2)], { type: "application/json" });
