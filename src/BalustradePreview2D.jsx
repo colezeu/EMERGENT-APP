@@ -36,7 +36,8 @@ export default function BalustradePreview3D({ dimensions, glassType, glassShape,
       const rz2 = cy * Math.sin(angleX) + rz * Math.cos(angleX);
       const dist = 6;
       const sc = dist / (dist + rz2);
-      return [W / 2 + rx * sc * 90, H / 2 - ry * sc * 90];
+      const zoom = Math.max(30, 90 - length * 8);
+        return [W / 2 + rx * sc * zoom, H / 2 - ry * sc * zoom];
     };
 
     const face = (pts, fill, stroke, sw = 1, dash = []) => {
