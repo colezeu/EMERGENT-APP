@@ -72,29 +72,29 @@ export default function BalustradePreview3D({ dimensions, glassType, glassShape,
 
 // Panouri sticla
 const isRampa = glassShape === "forma";
-const hLeft = totalH * 0.55;
-const hRight = totalH;
+const hLeft = skirt;           // stanga jos - incepe de la nivelul pardoselii/fustei
+const hRight = skirt + height; // dreapta sus - inaltimea maxima
 
 for (let i = 0; i < panelCount; i++) {
   if (isRampa) {
     face([
-      project(i*pW+0.01,    0,      -0.005),
-      project(i*pW+pW-0.01, 0,      -0.005),
-      project(i*pW+pW-0.01, hRight, -0.005),
-      project(i*pW+0.01,    hRight, -0.005),
-    ], null, "rgba(180,220,255,0.25)", 0.8, [4,3]);
-    face([
-      project(i*pW+0.01,    0,      -0.005),
-      project(i*pW+pW-0.01, 0,      -0.005),
-      project(i*pW+pW-0.01, hRight, -0.005),
-      project(i*pW+0.01,    hLeft,  -0.005),
-    ], glassFront, glassStroke, 1.5);
-    face([
-      project(i*pW+0.01,    hLeft,  -0.005),
-      project(i*pW+pW-0.01, hRight, -0.005),
-      project(i*pW+pW-0.01, hRight,  0.005),
-      project(i*pW+0.01,    hLeft,   0.005),
-    ], glassTop, glassStroke, 0.5);
+  project(i*pW+0.01,    skirt,  -0.005),
+  project(i*pW+pW-0.01, skirt,  -0.005),
+  project(i*pW+pW-0.01, hRight, -0.005),
+  project(i*pW+0.01,    hRight, -0.005),
+], null, "rgba(180,220,255,0.25)", 0.8, [4,3]);
+face([
+  project(i*pW+0.01,    hLeft,  -0.005),
+  project(i*pW+pW-0.01, skirt,  -0.005),
+  project(i*pW+pW-0.01, hRight, -0.005),
+  project(i*pW+0.01,    hRight, -0.005),
+], glassFront, glassStroke, 1.5);
+face([
+  project(i*pW+0.01,    hRight, -0.005),
+  project(i*pW+pW-0.01, hRight, -0.005),
+  project(i*pW+pW-0.01, hRight,  0.005),
+  project(i*pW+0.01,    hRight,  0.005),
+], glassTop, glassStroke, 0.5);
   } else {
     box(i*pW+0.01, 0, -0.005, pW-0.02, totalH, 0.01, glassTop, glassFront, glassSide, glassStroke);
   }
