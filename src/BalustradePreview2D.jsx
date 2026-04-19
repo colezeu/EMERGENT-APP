@@ -123,29 +123,37 @@ for (let i = 0; i < panelCount; i++) {
         "rgba(150,190,210,0.5)", "rgba(150,190,210,0.4)", "rgba(120,160,180,0.4)", "rgba(180,220,255,0.3)");
     }
 
-// Fusta + linie delimitare
+    // Fusta - desenata ca sticla, se plateste
 if (hasSkirt) {
   const stepH = height * 0.35;
   for (let i = 0; i < panelCount; i++) {
-    const yBottomLeft  = isRampa ? i * stepH       : 0;
-    const yBottomRight = isRampa ? (i+1) * stepH   : 0;
-    const yTopLeft     = isRampa ? i * stepH + skirt       : skirt;
-    const yTopRight    = isRampa ? (i+1) * stepH + skirt   : skirt;
+    const yBottomLeft  = isRampa ? i * stepH         : 0;
+    const yBottomRight = isRampa ? (i+1) * stepH     : 0;
+    const yTopLeft     = isRampa ? i * stepH + skirt : skirt;
+    const yTopRight    = isRampa ? (i+1) * stepH + skirt : skirt;
 
-    // Suprafata fusta
+    // Suprafata fusta - ca sticla
     face([
-      project(i*pW+0.01,    yBottomLeft,  -0.004),
-      project(i*pW+pW-0.01, yBottomRight, -0.004),
-      project(i*pW+pW-0.01, yTopRight,    -0.004),
-      project(i*pW+0.01,    yTopLeft,     -0.004),
-    ], "rgba(180,220,255,0.08)", "rgba(180,220,255,0.15)", 0.5);
+      project(i*pW+0.01,    yBottomLeft,  -0.005),
+      project(i*pW+pW-0.01, yBottomRight, -0.005),
+      project(i*pW+pW-0.01, yTopRight,    -0.005),
+      project(i*pW+0.01,    yTopLeft,     -0.005),
+    ], glassFront, glassStroke, 1);
 
-    // Linie punctata delimitare
+    // Top fusta
+    face([
+      project(i*pW+0.01,    yTopLeft,  -0.005),
+      project(i*pW+pW-0.01, yTopRight, -0.005),
+      project(i*pW+pW-0.01, yTopRight,  0.005),
+      project(i*pW+0.01,    yTopLeft,   0.005),
+    ], glassTop, glassStroke, 0.5);
+
+    // Linie punctata delimitare fusta/panou
     const p1 = project(i*pW+0.01,    yTopLeft,  0);
     const p2 = project(i*pW+pW-0.01, yTopRight, 0);
     ctx.beginPath();
     ctx.moveTo(...p1); ctx.lineTo(...p2);
-    ctx.strokeStyle = "rgba(180,220,255,0.6)";
+    ctx.strokeStyle = "rgba(180,220,255,0.8)";
     ctx.lineWidth = 1.5;
     ctx.setLineDash([5,3]);
     ctx.stroke();
