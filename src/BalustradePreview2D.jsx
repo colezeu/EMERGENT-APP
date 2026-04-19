@@ -69,36 +69,55 @@ export default function BalustradePreview3D({ dimensions, glassType, glassShape,
       project(-0.2,0,-0.1), project(length+0.2,0,-0.1),
       project(length+0.2,0,0.15), project(-0.2,0,0.15)
     ], "#1a1d26", "rgba(200,169,110,0.2)", 0.5);
-
 // Panouri sticla
 const isRampa = glassShape === "forma";
-const hLeft = skirt;           // stanga jos - incepe de la nivelul pardoselii/fustei
-const hRight = skirt + height; // dreapta sus - inaltimea maxima
 
 for (let i = 0; i < panelCount; i++) {
   if (isRampa) {
+    // Fiecare panou urca - stanga mai jos, dreapta mai sus
+    const stepH = height * 0.35; // cat urca fiecare panou
+    const yBottomLeft  = skirt + i * stepH;
+    const yBottomRight = skirt + (i + 1) * stepH;
+    const yTopLeft     = yBottomLeft  + height;
+    const yTopRight    = yBottomRight + height;
+
+    // Dreptunghi punctat - suprafata platita (dreptunghi maxim)
     face([
-  project(i*pW+0.01,    skirt,  -0.005),
-  project(i*pW+pW-0.01, skirt,  -0.005),
-  project(i*pW+pW-0.01, hRight, -0.005),
-  project(i*pW+0.01,    hRight, -0.005),
-], null, "rgba(180,220,255,0.25)", 0.8, [4,3]);
-face([
-  project(i*pW+0.01,    hLeft,  -0.005),
-  project(i*pW+pW-0.01, skirt,  -0.005),
-  project(i*pW+pW-0.01, hRight, -0.005),
-  project(i*pW+0.01,    hRight, -0.005),
-], glassFront, glassStroke, 1.5);
-face([
-  project(i*pW+0.01,    hRight, -0.005),
-  project(i*pW+pW-0.01, hRight, -0.005),
-  project(i*pW+pW-0.01, hRight,  0.005),
-  project(i*pW+0.01,    hRight,  0.005),
-], glassTop, glassStroke, 0.5);
+      project(i*pW+0.01,    skirt,      -0.005),
+      project(i*pW+pW-0.01, skirt,      -0.005),
+      project(i*pW+pW-0.01, yTopRight,  -0.005),
+      project(i*pW+0.01,    yTopRight,  -0.005),
+    ], null, "rgba(180,220,255,0.2)", 0.8, [4,3]);
+
+    // Panou real - paralelogram inclinat
+    face([
+      project(i*pW+0.01,    yBottomLeft,  -0.005),
+      project(i*pW+pW-0.01, yBottomRight, -0.005),
+      project(i*pW+pW-0.01, yTopRight,    -0.005),
+      project(i*pW+0.01,    yTopLeft,     -0.005),
+    ], glassFront, glassStroke, 1.5);
+
+    // Muchia superioara
+    face([
+      project(i*pW+0.01,    yTopLeft,  -0.005),
+      project(i*pW+pW-0.01, yTopRight, -0.005),
+      project(i*pW+pW-0.01, yTopRight,  0.005),
+      project(i*pW+0.01,    yTopLeft,   0.005),
+    ], glassTop, glassStroke, 0.5);
+
+    // Muchia inferioara inclinata
+    face([
+      project(i*pW+0.01,    yBottomLeft,  -0.005),
+      project(i*pW+pW-0.01, yBottomRight, -0.005),
+      project(i*pW+pW-0.01, yBottomRight,  0.005),
+      project(i*pW+0.01,    yBottomLeft,   0.005),
+    ], glassTop, glassStroke, 0.5);
+
   } else {
     box(i*pW+0.01, 0, -0.005, pW-0.02, totalH, 0.01, glassTop, glassFront, glassSide, glassStroke);
   }
-}    // Separatori panouri
+}
+   // Separatori panouri
     for (let i = 1; i < panelCount; i++) {
       box(i*pW-0.008, 0, -0.01, 0.016, totalH, 0.02,
         "rgba(150,190,210,0.5)", "rgba(150,190,210,0.4)", "rgba(120,160,180,0.4)", "rgba(180,220,255,0.3)");
