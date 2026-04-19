@@ -18,7 +18,12 @@ function App() {
         <Route path="/configurator/balustrade"       element={<BalustradeConfiguratorPage />} />
         <Route path="/configurator/cabine-dus"       element={<ShowerConfiguratorPage />} />
         <Route path="/configurator/inchidere-terasa" element={<TerraceConfiguratorPage />} />
-        <Route path="/configurator/pergola-copertina"element={<PergolaConfiguratorPage />} />
+        import CopertinaConfiguratorPage from "./CopertinaConfiguratorPage.jsx";
+
+// Add alongside your existing pergola route:
+<Route path="/configurator/copertina" element={<CopertinaConfiguratorPage />} />
+<Route path="/configurator/pergola"   element={<PergolaConfiguratorPage />} />
+        
         <Route path="/configurator/usi-batante"      element={<SwingDoorConfiguratorPage />} />
         <Route path="/configurator/usi-culisante"    element={<SlidingDoorConfiguratorPage />} />
         <Route path="/configurator/partitionari"     element={<PartitionConfiguratorPage />} />
