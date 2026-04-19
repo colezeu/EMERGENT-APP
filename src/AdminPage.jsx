@@ -11,27 +11,24 @@ export default function AdminPage() {
   const [catalog, setCatalog] = useState(null);
   const [loaded, setLoaded] = useState(false);
 
-  const login = () => {
-    if (pass === PASSWORD) {
-      fetch("/catalog.json")
-        .then(r => {
-          if (!r.ok) throw new Error("fetch failed");
-          return r.json();
-        })
-        .then(d => {
-          setCatalog(d);
-          setLoaded(true);
-          setAuth(true);
-        })
-        .catch(() => {
-          setError(true);
-          setTimeout(() => setError(false), 2000);
-        });
-    } else {
-      setError(true);
-      setTimeout(() => setError(false), 2000);
-    }
-  };
+ const login = () => {
+  if (pass !== PASSWORD) {
+    setError(true);
+    setTimeout(() => setError(false), 2000);
+    return;
+  }
+  fetch("/catalog.json")
+    .then(r => r.json())
+    .then(d => {
+      setCatalog(d);
+      setLoaded(true);
+      setAuth(true);
+    })
+    .catch(err => {
+      console.error("Eroare la încărcarea catalogului:", err);
+      alert("Eroare la încărcarea catalogului. Verifică că public/catalog.json există.");
+    });
+};
 
   const exportJson = () => {
     const blob = new Blob([JSON.stringify(catalog, null, 2)], { type: "application/json" });
