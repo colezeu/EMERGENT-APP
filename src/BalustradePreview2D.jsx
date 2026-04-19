@@ -123,14 +123,26 @@ for (let i = 0; i < panelCount; i++) {
         "rgba(150,190,210,0.5)", "rgba(150,190,210,0.4)", "rgba(120,160,180,0.4)", "rgba(180,220,255,0.3)");
     }
 
-    // Linie delimitare fusta - pe rampa
+// Fusta + linie delimitare
 if (hasSkirt) {
   const stepH = height * 0.35;
   for (let i = 0; i < panelCount; i++) {
-    const yLeft  = isRampa ? i * stepH + skirt : skirt;
-    const yRight = isRampa ? (i+1) * stepH + skirt : skirt;
-    const p1 = project(i*pW+0.01,    yLeft,  0);
-    const p2 = project(i*pW+pW-0.01, yRight, 0);
+    const yBottomLeft  = isRampa ? i * stepH       : 0;
+    const yBottomRight = isRampa ? (i+1) * stepH   : 0;
+    const yTopLeft     = isRampa ? i * stepH + skirt       : skirt;
+    const yTopRight    = isRampa ? (i+1) * stepH + skirt   : skirt;
+
+    // Suprafata fusta
+    face([
+      project(i*pW+0.01,    yBottomLeft,  -0.004),
+      project(i*pW+pW-0.01, yBottomRight, -0.004),
+      project(i*pW+pW-0.01, yTopRight,    -0.004),
+      project(i*pW+0.01,    yTopLeft,     -0.004),
+    ], "rgba(180,220,255,0.08)", "rgba(180,220,255,0.15)", 0.5);
+
+    // Linie punctata delimitare
+    const p1 = project(i*pW+0.01,    yTopLeft,  0);
+    const p2 = project(i*pW+pW-0.01, yTopRight, 0);
     ctx.beginPath();
     ctx.moveTo(...p1); ctx.lineTo(...p2);
     ctx.strokeStyle = "rgba(180,220,255,0.6)";
@@ -146,7 +158,6 @@ if (hasSkirt) {
     ctx.fillText(skirt === 0.35 ? "350mm" : "100mm", mid[0] + 6, mid[1]);
   }
 }
-
 // BUTONI INOX - 2 perechi per panou (stanga si dreapta), urmand rampa
 if (mountingType === "clips") {
   for (let i = 0; i < panelCount; i++) {
