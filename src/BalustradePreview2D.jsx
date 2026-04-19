@@ -70,42 +70,35 @@ export default function BalustradePreview3D({ dimensions, glassType, glassShape,
       project(length+0.2,0,0.15), project(-0.2,0,0.15)
     ], "#1a1d26", "rgba(200,169,110,0.2)", 0.5);
 
-    // Panouri sticla
-    const isRampa = glassShape === "forma";
-    for (let i = 0; i < panelCount; i++) {
-     if (isRampa) {
-  const hLeft = totalH * 0.55;   // inaltimea stanga (mai jos)
-  const hRight = totalH;          // inaltimea dreapta (mai sus)
+// Panouri sticla
+const isRampa = glassShape === "forma";
+const hLeft = totalH * 0.55;
+const hRight = totalH;
 
-  // Dreptunghi punctat - suprafata platita (inaltimea maxima)
-  face([
-    project(i*pW+0.01,    0,      -0.005),
-    project(i*pW+pW-0.01, 0,      -0.005),
-    project(i*pW+pW-0.01, hRight, -0.005),
-    project(i*pW+0.01,    hRight, -0.005),
-  ], null, "rgba(180,220,255,0.25)", 0.8, [4,3]);
-
-  // Forma reala - trapez (jos orizontal, sus in urcare)
-  face([
-    project(i*pW+0.01,    0,      -0.005),  // stanga jos
-    project(i*pW+pW-0.01, 0,      -0.005),  // dreapta jos
-    project(i*pW+pW-0.01, hRight, -0.005),  // dreapta sus (inalt)
-    project(i*pW+0.01,    hLeft,  -0.005),  // stanga sus (jos)
-  ], glassFront, glassStroke, 1.5);
-
-  // Muchia superioara inclinata
-  face([
-    project(i*pW+0.01,    hLeft,  -0.005),
-    project(i*pW+pW-0.01, hRight, -0.005),
-    project(i*pW+pW-0.01, hRight,  0.005),
-    project(i*pW+0.01,    hLeft,   0.005),
-  ], glassTop, glassStroke, 0.5);
-      } else {
-        box(i*pW+0.01, 0, -0.005, pW-0.02, totalH, 0.01, glassTop, glassFront, glassSide, glassStroke);
-      }
-    }
-
-    // Separatori panouri
+for (let i = 0; i < panelCount; i++) {
+  if (isRampa) {
+    face([
+      project(i*pW+0.01,    0,      -0.005),
+      project(i*pW+pW-0.01, 0,      -0.005),
+      project(i*pW+pW-0.01, hRight, -0.005),
+      project(i*pW+0.01,    hRight, -0.005),
+    ], null, "rgba(180,220,255,0.25)", 0.8, [4,3]);
+    face([
+      project(i*pW+0.01,    0,      -0.005),
+      project(i*pW+pW-0.01, 0,      -0.005),
+      project(i*pW+pW-0.01, hRight, -0.005),
+      project(i*pW+0.01,    hLeft,  -0.005),
+    ], glassFront, glassStroke, 1.5);
+    face([
+      project(i*pW+0.01,    hLeft,  -0.005),
+      project(i*pW+pW-0.01, hRight, -0.005),
+      project(i*pW+pW-0.01, hRight,  0.005),
+      project(i*pW+0.01,    hLeft,   0.005),
+    ], glassTop, glassStroke, 0.5);
+  } else {
+    box(i*pW+0.01, 0, -0.005, pW-0.02, totalH, 0.01, glassTop, glassFront, glassSide, glassStroke);
+  }
+}    // Separatori panouri
     for (let i = 1; i < panelCount; i++) {
       box(i*pW-0.008, 0, -0.01, 0.016, totalH, 0.02,
         "rgba(150,190,210,0.5)", "rgba(150,190,210,0.4)", "rgba(120,160,180,0.4)", "rgba(180,220,255,0.3)");
