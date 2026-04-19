@@ -123,22 +123,53 @@ for (let i = 0; i < panelCount; i++) {
         "rgba(150,190,210,0.5)", "rgba(150,190,210,0.4)", "rgba(120,160,180,0.4)", "rgba(180,220,255,0.3)");
     }
 
-    // Linie delimitare fusta
-    if (hasSkirt) {
-      const p1 = project(0, skirt, 0);
-      const p2 = project(length, skirt, 0);
-      ctx.beginPath();
-      ctx.moveTo(...p1); ctx.lineTo(...p2);
-      ctx.strokeStyle = "rgba(180,220,255,0.6)";
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([5,3]);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      const mid = project(length * 0.85, skirt / 2, 0);
-      ctx.fillStyle = "rgba(200,169,110,0.6)";
-      ctx.font = "9px DM Sans";
-      ctx.fillText(skirt === 0.35 ? "350mm" : "100mm", mid[0] + 6, mid[1]);
-    }
+    // Linie delimitare fusta - pe rampa
+if (hasSkirt) {
+  const stepH = height * 0.35;
+  for (let i = 0; i < panelCount; i++) {
+    const yLeft  = isRampa ? i * stepH + skirt : skirt;
+    const yRight = isRampa ? (i+1) * stepH + skirt : skirt;
+    const p1 = project(i*pW+0.01,    yLeft,  0);
+    const p2 = project(i*pW+pW-0.01, yRight, 0);
+    ctx.beginPath();
+    ctx.moveTo(...p1); ctx.lineTo(...p2);
+    ctx.strokeStyle = "rgba(180,220,255,0.6)";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5,3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+  if (!isRampa) {
+    const mid = project(length * 0.85, skirt / 2, 0);
+    ctx.fillStyle = "rgba(200,169,110,0.6)";
+    ctx.font = "9px DM Sans";
+    ctx.fillText(skirt === 0.35 ? "350mm" : "100mm", mid[0] + 6, mid[1]);
+  }
+}
+
+// BUTONI INOX - 2 perechi per panou (stanga si dreapta), urmand rampa
+if (mountingType === "clips") {
+  for (let i = 0; i < panelCount; i++) {
+    const stepH = height * 0.35;
+    const yBaseLeft  = isRampa ? i * stepH       : 0;
+    const yBaseRight = isRampa ? i * stepH + stepH * 0.6 : 0;
+    const xLeft  = i*pW + pW*0.18;
+    const xRight = i*pW + pW*0.82;
+    [
+      { x: xLeft,  y: yBaseLeft  + skirt*0.28 },
+      { x: xLeft,  y: yBaseLeft  + skirt*0.72 },
+      { x: xRight, y: yBaseRight + skirt*0.28 },
+      { x: xRight, y: yBaseRight + skirt*0.72 },
+    ].forEach(pos => {
+      const [cx, cy] = project(pos.x, pos.y, 0.012);
+      ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI*2);
+      ctx.fillStyle = "rgba(200,169,110,0.2)"; ctx.fill();
+      ctx.strokeStyle = inox; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, 2.2, 0, Math.PI*2);
+      ctx.fillStyle = inox; ctx.fill();
+    });
+  }
+}
 // BUTONI INOX - 2 butoni per panou, pe verticala stanga, urmand rampa
 if (mountingType === "clips") {
   for (let i = 0; i < panelCount; i++) {
