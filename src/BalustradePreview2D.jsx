@@ -141,7 +141,60 @@ for (let i = 0; i < panelCount; i++) {
     }
 
     // BUTONI INOX
-    if (mountingType === "clips") {
+
+    // Linie delimitare fusta + BUTONI - pe rampa daca e cazul
+if (hasSkirt) {
+  if (isRampa) {
+    // Fusta pe rampa - linie inclinata
+    const stepH = height * 0.35;
+    for (let i = 0; i < panelCount; i++) {
+      const yLeft  = i * stepH;
+      const yRight = (i + 1) * stepH;
+      const p1 = project(i*pW+0.01,    yLeft,  0);
+      const p2 = project(i*pW+pW-0.01, yRight, 0);
+      ctx.beginPath();
+      ctx.moveTo(...p1); ctx.lineTo(...p2);
+      ctx.strokeStyle = "rgba(180,220,255,0.6)";
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5,3]);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  } else {
+    const p1 = project(0, skirt, 0);
+    const p2 = project(length, skirt, 0);
+    ctx.beginPath();
+    ctx.moveTo(...p1); ctx.lineTo(...p2);
+    ctx.strokeStyle = "rgba(180,220,255,0.6)";
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([5,3]);
+    ctx.stroke();
+    ctx.setLineDash([]);
+    const mid = project(length * 0.85, skirt / 2, 0);
+    ctx.fillStyle = "rgba(200,169,110,0.6)";
+    ctx.font = "9px DM Sans";
+    ctx.fillText(skirt === 0.35 ? "350mm" : "100mm", mid[0] + 6, mid[1]);
+  }
+}
+if (mountingType === "clips") {
+  for (let i = 0; i < panelCount; i++) {
+    const stepH = height * 0.35;
+    const yBase = isRampa ? i * stepH + stepH * 0.5 : 0;
+    [
+      { x: i*pW + pW*0.18, y: yBase + skirt*0.28 },
+      { x: i*pW + pW*0.18, y: yBase + skirt*0.72 },
+      { x: i*pW + pW*0.82, y: yBase + skirt*0.28 },
+      { x: i*pW + pW*0.82, y: yBase + skirt*0.72 },
+    ].forEach(pos => {
+      const [cx, cy] = project(pos.x, pos.y, 0.012);
+      ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI*2);
+      ctx.fillStyle = "rgba(200,169,110,0.2)"; ctx.fill();
+      ctx.strokeStyle = inox; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.beginPath(); ctx.arc(cx, cy, 2.2, 0, Math.PI*2);
+      ctx.fillStyle = inox; ctx.fill();
+    });
+  }
+}if (mountingType === "clips") {
       for (let i = 0; i < panelCount; i++) {
         [
           { x: i*pW + pW*0.18, y: skirt*0.28 },
