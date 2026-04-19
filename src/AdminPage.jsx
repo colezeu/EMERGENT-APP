@@ -3,28 +3,35 @@ import { Download, Lock, LogOut, ChevronDown, ChevronUp } from "lucide-react";
 
 const PASSWORD = "glass2026";
 
-const login = () => {
-  if (pass === PASSWORD) {
-    fetch("/catalog.json")
-      .then(r => {
-        if (!r.ok) throw new Error("fetch failed");
-        return r.json();
-      })
-      .then(d => {
-        setCatalog(d);
-        setLoaded(true);
-        setAuth(true);
-      })
-      .catch(err => {
-        console.error("Eroare catalog:", err);
-        setError(true);
-        setTimeout(() => setError(false), 2000);
-      });
-  } else {
-    setError(true);
-    setTimeout(() => setError(false), 2000);
-  }
-};
+export default function AdminPage() {
+  const [auth, setAuth] = useState(false);
+  const [pass, setPass] = useState("");
+  const [error, setError] = useState(false);
+  const [openSection, setOpenSection] = useState(null);
+  const [catalog, setCatalog] = useState(null);
+  const [loaded, setLoaded] = useState(false);
+
+  const login = () => {
+    if (pass === PASSWORD) {
+      fetch("/catalog.json")
+        .then(r => {
+          if (!r.ok) throw new Error("fetch failed");
+          return r.json();
+        })
+        .then(d => {
+          setCatalog(d);
+          setLoaded(true);
+          setAuth(true);
+        })
+        .catch(() => {
+          setError(true);
+          setTimeout(() => setError(false), 2000);
+        });
+    } else {
+      setError(true);
+      setTimeout(() => setError(false), 2000);
+    }
+  };
 
   const exportJson = () => {
     const blob = new Blob([JSON.stringify(catalog, null, 2)], { type: "application/json" });
@@ -49,6 +56,57 @@ const login = () => {
 
   const updateVat = (value) => {
     setCatalog(prev => ({ ...prev, vatRate: parseFloat(value) / 100 || 0 }));
+  };
+
+  const PRICE_KEYS = ["pricePerSqm", "pricePerMeter", "price", "pricePerUnit", "basePrice"];
+  const LABELS = {
+    pricePerSqm: "Preț/m²",
+    pricePerMeter: "Preț/m",
+    price: "Preț fix",
+    pricePerUnit: "Preț/buc",
+    basePrice: "Preț de bază"
+  };
+  const PRODUCT_NAMES = {
+    "balustrade": "Balustrade",
+    "cabine-dus": "Cabine Duș",
+    "inchidere-terasa": "Închidere Mobilă Terase",
+    "pergola-copertina": "Pergolă & Copertină",
+    "usi-batante": "Uși Batante",
+    "usi-culisante": "Uși Culisante",
+    "partitionari": "Partiționări"
+  };
+
+  const renderFields = (productKey, obj, prefix) => {
+    if (!prefix) prefix = "";
+    return Object.entries(obj).flatMap(([key, val]) => {
+      const path = prefix ? `${prefix}.${key}` : key;
+      if (typeof val === "object" && val !== null) {
+        return renderFields(productKey, val, path);
+      }
+      if (PRICE_KEYS.includes(key)) {
+        const parts = prefix.split(".");
+        let parentObj = catalog.products[productKey];
+        for (const p of parts) { if (parentObj && parentObj[p]) parentObj = parentObj[p]; }
+        const parentName = parentObj?.name || parts[parts.length - 1];
+        return [(
+          <div key={path} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
+            <div>
+              <div style={{ fontSize:"0.85rem", color:"#f0ede8", fontWeight:500 }}>{parentName}</div>
+              <div style={{ fontSize:"0.75rem", color:"rgba(240,237,232,0.35)" }}>{LABELS[key]}</div>
+            </div>
+            <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+              <input
+                type="number" step="1" value={val}
+                onChange={e => updatePrice(productKey, path, e.target.value)}
+                style={{ width:90, background:"rgba(255,255,255,0.06)", border:"1.5px solid rgba(200,169,110,0.3)", borderRadius:8, padding:"6px 10px", color:"#c8a96e", fontWeight:700, fontSize:"0.95rem", textAlign:"right", outline:"none", fontFamily:"'DM Sans', sans-serif" }}
+              />
+              <span style={{ color:"rgba(240,237,232,0.4)", fontSize:"0.8rem" }}>€</span>
+            </div>
+          </div>
+        )];
+      }
+      return [];
+    });
   };
 
   if (!auth) {
@@ -76,55 +134,13 @@ const login = () => {
     );
   }
 
-  if (!loaded) return (
-    <div style={{ minHeight:"100vh", background:"#0f1117", display:"flex", alignItems:"center", justifyContent:"center" }}>
-      <div style={{ color:"#c8a96e" }}>Se încarcă catalogul...</div>
-    </div>
-  );
-
-  const PRICE_KEYS = ["pricePerSqm", "pricePerMeter", "price", "pricePerUnit", "basePrice"];
-  const LABELS = { pricePerSqm:"Preț/m²", pricePerMeter:"Preț/m", price:"Preț fix", pricePerUnit:"Preț/buc", basePrice:"Preț de bază" };
-
-  const PRODUCT_NAMES = {
-    "balustrade":"Balustrade",
-    "cabine-dus":"Cabine Duș",
-    "inchidere-terasa":"Închidere Mobilă Terase",
-    "pergola-copertina":"Pergolă & Copertină",
-    "usi-batante":"Uși Batante",
-    "usi-culisante":"Uși Culisante",
-    "partitionari":"Partiționări"
-  };
-
-  const renderFields = (productKey, obj, prefix = "") => {
-    return Object.entries(obj).flatMap(([key, val]) => {
-      const path = prefix ? `${prefix}.${key}` : key;
-      if (typeof val === "object" && val !== null) {
-        return renderFields(productKey, val, path);
-      }
-      if (PRICE_KEYS.includes(key)) {
-        const parentName = prefix.split(".").reduce((o, k) => o?.[k], catalog.products[productKey])?.name || prefix.split(".").pop();
-        return [(
-          <div key={path} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
-            <div>
-              <div style={{ fontSize:"0.85rem", color:"#f0ede8", fontWeight:500 }}>{parentName}</div>
-              <div style={{ fontSize:"0.75rem", color:"rgba(240,237,232,0.35)" }}>{LABELS[key]}</div>
-            </div>
-            <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-              <input
-                type="number"
-                step="1"
-                value={val}
-                onChange={e => updatePrice(productKey, path, e.target.value)}
-                style={{ width:90, background:"rgba(255,255,255,0.06)", border:"1.5px solid rgba(200,169,110,0.3)", borderRadius:8, padding:"6px 10px", color:"#c8a96e", fontWeight:700, fontSize:"0.95rem", textAlign:"right", outline:"none", fontFamily:"'DM Sans', sans-serif" }}
-              />
-              <span style={{ color:"rgba(240,237,232,0.4)", fontSize:"0.8rem" }}>€</span>
-            </div>
-          </div>
-        )];
-      }
-      return [];
-    });
-  };
+  if (!loaded) {
+    return (
+      <div style={{ minHeight:"100vh", background:"#0f1117", display:"flex", alignItems:"center", justifyContent:"center" }}>
+        <div style={{ color:"#c8a96e" }}>Se încarcă catalogul...</div>
+      </div>
+    );
+  }
 
   return (
     <div style={{ minHeight:"100vh", background:"#0f1117", color:"#f0ede8" }}>
@@ -137,15 +153,13 @@ const login = () => {
           <button className="btn-primary" style={{ display:"flex", alignItems:"center", gap:8 }} onClick={exportJson}>
             <Download size={15} /> Export catalog.json
           </button>
-          <button className="btn-ghost" style={{ display:"flex", alignItems:"center", gap:8 }} onClick={() => setAuth(false)}>
+          <button className="btn-ghost" style={{ display:"flex", alignItems:"center", gap:8 }} onClick={() => { setAuth(false); setLoaded(false); setCatalog(null); }}>
             <LogOut size={15} /> Ieși
           </button>
         </div>
       </header>
 
       <main style={{ maxWidth:800, margin:"0 auto", padding:"32px 24px" }}>
-
-        {/* TVA */}
         <div style={{ background:"rgba(200,169,110,0.08)", border:"1px solid rgba(200,169,110,0.2)", borderRadius:16, padding:"20px 24px", marginBottom:24, display:"flex", justifyContent:"space-between", alignItems:"center" }}>
           <div>
             <div style={{ fontWeight:700 }}>Cotă TVA</div>
@@ -162,7 +176,6 @@ const login = () => {
           </div>
         </div>
 
-        {/* Produse */}
         <div style={{ display:"flex", flexDirection:"column", gap:12 }}>
           {Object.entries(catalog.products).map(([key, product]) => (
             <div key={key} className="glass-card" style={{ borderRadius:16, overflow:"hidden" }}>
