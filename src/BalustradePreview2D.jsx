@@ -139,20 +139,15 @@ for (let i = 0; i < panelCount; i++) {
       ctx.font = "9px DM Sans";
       ctx.fillText(skirt === 0.35 ? "350mm" : "100mm", mid[0] + 6, mid[1]);
     }
-// BUTONI INOX
+// BUTONI INOX - 2 butoni per panou, pe verticala stanga, urmand rampa
 if (mountingType === "clips") {
   for (let i = 0; i < panelCount; i++) {
     const stepH = height * 0.35;
-    const yMidPanel = isRampa ? i * stepH + stepH * 0.5 : 0;
-    const left  = i*pW + pW*0.18;
-    const right = i*pW + pW*0.82;
-    const top   = yMidPanel + skirt*0.28;
-    const bot   = yMidPanel + skirt*0.72;
+    const yBase = isRampa ? i * stepH : 0; // baza fustei pentru panoul i
+    const xLeft = i*pW + pW*0.2;
     [
-      { x: left,  y: top },
-      { x: left,  y: bot },
-      { x: right, y: top },
-      { x: right, y: bot },
+      { x: xLeft, y: yBase + skirt*0.28 },
+      { x: xLeft, y: yBase + skirt*0.72 },
     ].forEach(pos => {
       const [cx, cy] = project(pos.x, pos.y, 0.012);
       ctx.beginPath(); ctx.arc(cx, cy, 5, 0, Math.PI*2);
@@ -163,7 +158,6 @@ if (mountingType === "clips") {
     });
   }
 }
-
     // MINI-MONTANTI
     if (mountingType === "mini-montanti") {
       for (let i = 0; i < panelCount; i++) {
