@@ -3,16 +3,16 @@ import { ConfigHeader, SectionCard, OptionBtn, ToggleOption, NumberInput, QuoteS
 import QuoteModal from "./QuoteModal.jsx";
 import BalustradePreview3D from "./BalustradePreview2D.jsx";
 
-const FALLBACK = { name:"Balustrade", basePrice:50, glassShapes:{ dreapta:{name:"Sticlă Dreaptă",desc:"Panou drept standard"}, forma:{name:"Sticlă Formă (rampă)",desc:"Tăiat pe unghi / curbă"} }, hardwareTypes:{ butoni:{name:"Cu Butoni Inox",pricePerMeter:55,desc:"Puncte de fixare, design minimalist"}, profil:{name:"Cu Profil",pricePerMeter:80,desc:"Profil U/V/L la bază"}, "mini-montanti":{name:"Cu Mini-Montanți",pricePerMeter:95,desc:"Montanți intermediari inox"}, "profil-pardoseala":{name:"Profil Pardoseală",pricePerMeter:120,desc:"Canal integrat în pardoseală"} }, profileShapes:{ U:{name:"Formă U",pricePerMeter:0}, V:{name:"Formă V",pricePerMeter:10}, L:{name:"Formă L",pricePerMeter:10} }, glassTypes:{ "8mm":{name:"Sticlă Laminată 8mm",pricePerSqm:150,desc:"Laminat 44.2, ideal interior"}, "10mm":{name:"Sticlă Securizată 10mm",pricePerSqm:200,desc:"Standard exterior"}, extraclar:{name:"Sticlă Extra Clară",pricePerSqm:280,desc:"Transparență maximă"} }, options:{ handrail:{name:"Mână Curentă Inox",pricePerMeter:45,desc:"Rotundă Ø42mm, satinat"}, "handrail-slim":{name:"Mână Curentă Slim",pricePerMeter:85,desc:"Profil plat 40x10mm"}, led:{name:"Iluminare LED",price:150,desc:"Bandă LED 3000K"} } };
+const FALLBACK = { name:"Balustrade", basePrice:150, glassShapes:{ dreapta:{name:"Sticlă Dreaptă",desc:"Panou drept standard"}, forma:{name:"Sticlă Formă (rampă)",desc:"Tăiat pe unghi / curbă"} }, hardwareTypes:{ butoni:{name:"Cu Butoni Inox",pricePerMeter:155,desc:"Puncte de fixare, design minimalist"}, "mini-montanti":{name:"Cu Mini-Montanți",pricePerMeter:195,desc:"Montanți intermediari inox"}, "profil-pardoseala":{name:"Profil Pardoseală",pricePerMeter:1220,desc:"Canal integrat în pardoseală"} }, profileShapes:{ U:{name:"Formă U",pricePerMeter:0}, V:{name:"Formă V",pricePerMeter:10}, L:{name:"Formă L",pricePerMeter:10} }, glassTypes:{ "662mm":{name:"Sticlă Securizată/Laminată 662 (13mm)",pricePerSqm:150,desc:"Laminat 66.2, ideal interior"}, "882mm":{name:"Sticlă Securizată/Laminată 882 (17mm)",pricePerSqm:200,desc:"Standard exterior"} }, options:{ handrail:{name:"Mână Curentă Inox",pricePerMeter:45,desc:"Rotundă Ø42mm, satinat"}, "handrail-slim":{name:"Mână Curentă Slim",pricePerMeter:85,desc:"Profil plat 40x10mm"}, led:{name:"Iluminare LED",price:150,desc:"Bandă LED 3000K"} } };
 
 export default function BalustradeConfiguratorPage() {
   const [product, setProduct] = useState(null);
-  const [vatRate, setVatRate] = useState(0.19);
+  const [vatRate, setVatRate] = useState(0.21);
   const [dims, setDims] = useState({ length:"", height:"0.9" });
   const [glassShape, setGlassShape] = useState("dreapta");
   const [hardware, setHardware] = useState("butoni");
   const [profileShape, setProfileShape] = useState("U");
-  const [glassType, setGlassType] = useState("8mm");
+  const [glassType, setGlassType] = useState("662mm");
   const [handrail, setHandrail] = useState("none");
   const [includeLed, setIncludeLed] = useState(false);
   const [calculating, setCalculating] = useState(false);
@@ -20,8 +20,14 @@ export default function BalustradeConfiguratorPage() {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    fetch("/catalog.json").then(r=>r.json())
-      .then(d => { setProduct(d.products.balustrade); setVatRate(d.vatRate); })
+    fetch("/catalog.json").then(r => r.json())
+      .then(d => {
+        setProduct(d.products.balustrade);
+        setVatRate(d.vatRate);
+        // Seteaza primul glassType disponibil din catalog
+        const firstGlass = Object.keys(d.products.balustrade.glassTypes)[0];
+        setGlassType(firstGlass);
+      })
       .catch(() => setProduct(FALLBACK));
   }, []);
 
@@ -29,10 +35,6 @@ export default function BalustradeConfiguratorPage() {
   const showProfileShape = hardware === "profil" || hardware === "profil-pardoseala";
   const isValid = dims.length && parseFloat(dims.length) > 0;
 
-  // Skirt logic:
-  // butoni = 0.35m
-  // profil V = 0.10m
-  // altele = 0
   const skirt = hardware === "butoni" ? 0.35
     : (hardware === "profil" && profileShape === "V") ? 0.10
     : 0;
@@ -44,11 +46,11 @@ export default function BalustradeConfiguratorPage() {
     const len = parseFloat(dims.length) || 0;
     const h   = parseFloat(dims.height) || 0;
     const area = len * (h + skirt);
-    const hwPrice   = len * p.hardwareTypes[hardware].pricePerMeter;
-    const profExtra = showProfileShape ? len * (p.profileShapes[profileShape]?.pricePerMeter || 0) : 0;
-    const glassPrice = area * p.glassTypes[glassType].pricePerSqm;
-    const handrailP  = handrail !== "none" ? len * p.options[handrail].pricePerMeter : 0;
-    const ledP       = includeLed ? p.options.led.price : 0;
+    const hwPrice    = len * (p.hardwareTypes[hardware]?.pricePerMeter || 0);
+    const profExtra  = showProfileShape ? len * (p.profileShapes[profileShape]?.pricePerMeter || 0) : 0;
+    const glassPrice = area * (p.glassTypes[glassType]?.pricePerSqm || 0);
+    const handrailP  = handrail !== "none" ? len * (p.options[handrail]?.pricePerMeter || 0) : 0;
+    const ledP       = includeLed ? (p.options.led?.price || 0) : 0;
     const raw = p.basePrice + hwPrice + profExtra + glassPrice + handrailP + ledP;
     const { subtotal, vat, total } = calcQuote(raw, vatRate);
     setQuote({ area:area.toFixed(2), hwPrice:Math.round(hwPrice+profExtra), glassPrice:Math.round(glassPrice), handrailP:Math.round(handrailP), ledP, subtotal, vat, total });
