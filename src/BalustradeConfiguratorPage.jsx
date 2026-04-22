@@ -22,8 +22,9 @@ export default function BalustradeConfiguratorPage() {
   useEffect(() => {
     fetch("/catalog.json").then(r => r.json())
       .then(d => {
-        setProduct(d.products.balustrade);
-        setVatRate(d.vatRate);
+  console.log("CATALOG OK:", JSON.stringify(d.products.balustrade));
+  setProduct(d.products.balustrade);
+  setVatRate(d.vatRate);
         // Seteaza primul glassType disponibil din catalog
         const firstGlass = Object.keys(d.products.balustrade.glassTypes)[0];
         setGlassType(firstGlass);
