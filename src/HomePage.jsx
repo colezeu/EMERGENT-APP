@@ -26,24 +26,18 @@ export default function HomePage() {
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
         padding: "0 32px",
-        background: "rgba(15,17,23,0.9)", backdropFilter: "blur(20px)",
+        background: "rgba(15,17,23,0.92)", backdropFilter: "blur(20px)",
         borderBottom: "1px solid rgba(255,255,255,0.07)",
         display: "flex", alignItems: "center", justifyContent: "space-between",
         height: 64
       }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{
-            width: 32, height: 32, borderRadius: 8,
-            background: "linear-gradient(135deg, #c8a96e, #7a5830)",
-            display: "flex", alignItems: "center", justifyContent: "center"
-          }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <rect x="2" y="2" width="5" height="12" rx="1" fill="rgba(255,255,255,0.9)" />
-              <rect x="9" y="2" width="5" height="8" rx="1" fill="rgba(255,255,255,0.6)" />
-            </svg>
-          </div>
-          <span style={{ fontWeight: 700, fontSize: "0.95rem", letterSpacing: "0.02em" }}>Glass Associates</span>
-        </div>
+        <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
+          <img
+            src="/logo.png"
+            alt="Glass Associates"
+            style={{ height: 28, filter: "invert(1)", opacity: 0.95 }}
+          />
+        </Link>
         <div style={{ display: "flex", gap: 2, flexWrap: "wrap", justifyContent: "flex-end" }}>
           {PRODUCTS.map(p => (
             <Link key={p.id} to={p.path} className="nav-link" style={{ fontSize: "0.8rem", padding: "4px 10px" }}>{p.name}</Link>
@@ -54,23 +48,52 @@ export default function HomePage() {
       {/* Hero */}
       <section style={{
         minHeight: "100vh", display: "flex", alignItems: "center",
-        padding: "100px 32px 80px", position: "relative", overflow: "hidden"
+        padding: "0", position: "relative", overflow: "hidden"
       }}>
-        <div style={{ position: "absolute", inset: 0, opacity: 0.025, backgroundImage: "linear-gradient(rgba(200,169,110,1) 1px, transparent 1px), linear-gradient(90deg, rgba(200,169,110,1) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
-        <div style={{ position: "absolute", top: "20%", right: "8%", width: 500, height: 500, borderRadius: "50%", background: "radial-gradient(circle, rgba(200,169,110,0.07) 0%, transparent 70%)", pointerEvents: "none" }} />
+        {/* Hero background image */}
+        <div style={{
+          position: "absolute", inset: 0,
+          backgroundImage: "url('/hero.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }} />
+        {/* Dark overlay gradient */}
+        <div style={{
+          position: "absolute", inset: 0,
+          background: "linear-gradient(to right, rgba(15,17,23,0.92) 0%, rgba(15,17,23,0.75) 50%, rgba(15,17,23,0.4) 100%)",
+        }} />
+        {/* Bottom fade */}
+        <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0, height: 200,
+          background: "linear-gradient(to top, #0f1117 0%, transparent 100%)",
+        }} />
 
-        <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", position: "relative" }}>
-          <div className="anim-fade-up" style={{ marginBottom: 20 }}>
-            <span style={{ fontSize: "0.75rem", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: "#c8a96e", border: "1px solid rgba(200,169,110,0.3)", borderRadius: 20, padding: "5px 14px" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", position: "relative", padding: "140px 32px 100px" }}>
+          <div className="anim-fade-up" style={{ marginBottom: 24 }}>
+            <span style={{
+              fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.15em",
+              textTransform: "uppercase", color: "#c8a96e",
+              border: "1px solid rgba(200,169,110,0.3)", borderRadius: 20,
+              padding: "6px 16px", display: "inline-block"
+            }}>
               Soluții din sticlă structurală
             </span>
           </div>
-          <h1 className="serif anim-fade-up-2" style={{ fontSize: "clamp(2.8rem, 7vw, 5.5rem)", lineHeight: 1.08, marginBottom: 28, fontWeight: 400 }}>
+
+          <h1 className="serif anim-fade-up-2" style={{
+            fontSize: "clamp(2.8rem, 7vw, 5.2rem)", lineHeight: 1.08,
+            marginBottom: 24, fontWeight: 400, maxWidth: 600
+          }}>
             Transparența<br /><span className="shimmer-text">devenită artă.</span>
           </h1>
-          <p className="anim-fade-up-3" style={{ maxWidth: 560, fontSize: "1.1rem", lineHeight: 1.7, color: "rgba(240,237,232,0.55)", marginBottom: 44 }}>
+
+          <p className="anim-fade-up-3" style={{
+            maxWidth: 480, fontSize: "1.05rem", lineHeight: 1.75,
+            color: "rgba(240,237,232,0.6)", marginBottom: 40
+          }}>
             Configurați produse din sticlă de înaltă precizie — balustrade, cabine duș, terase, pergole, uși și partiționări. Ofertă în 48h.
           </p>
+
           <div className="anim-fade-up-4" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
             <Link to="/configurator/balustrade">
               <button className="btn-primary" style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -83,11 +106,20 @@ export default function HomePage() {
           </div>
 
           {/* Stats */}
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(4,1fr)", marginTop: 80, border: "1px solid rgba(255,255,255,0.07)", borderRadius: 16, overflow: "hidden", background: "rgba(255,255,255,0.03)" }} className="anim-fade-up-4">
+          <div style={{
+            display: "grid", gridTemplateColumns: "repeat(4,1fr)",
+            marginTop: 80, border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 16, overflow: "hidden",
+            background: "rgba(15,17,23,0.6)", backdropFilter: "blur(12px)"
+          }} className="anim-fade-up-4">
             {STATS.map((s, i) => (
-              <div key={i} style={{ padding: "24px 20px", borderRight: i < 3 ? "1px solid rgba(255,255,255,0.07)" : "none", textAlign: "center" }}>
+              <div key={i} style={{
+                padding: "24px 20px",
+                borderRight: i < 3 ? "1px solid rgba(255,255,255,0.08)" : "none",
+                textAlign: "center"
+              }}>
                 <div style={{ fontSize: "1.8rem", fontWeight: 700, color: "#c8a96e", fontFamily: "'DM Serif Display', serif" }}>{s.value}</div>
-                <div style={{ fontSize: "0.78rem", color: "rgba(240,237,232,0.4)", marginTop: 4 }}>{s.label}</div>
+                <div style={{ fontSize: "0.78rem", color: "rgba(240,237,232,0.45)", marginTop: 4 }}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -124,7 +156,12 @@ export default function HomePage() {
 
       {/* CTA */}
       <section style={{ padding: "80px 32px" }}>
-        <div style={{ maxWidth: 900, margin: "0 auto", background: "linear-gradient(135deg, rgba(200,169,110,0.1), rgba(200,169,110,0.03))", border: "1px solid rgba(200,169,110,0.2)", borderRadius: 24, padding: "60px 48px", textAlign: "center" }}>
+        <div style={{
+          maxWidth: 900, margin: "0 auto",
+          background: "linear-gradient(135deg, rgba(200,169,110,0.1), rgba(200,169,110,0.03))",
+          border: "1px solid rgba(200,169,110,0.2)", borderRadius: 24,
+          padding: "60px 48px", textAlign: "center"
+        }}>
           <h2 className="serif" style={{ fontSize: "clamp(1.6rem,3.5vw,2.4rem)", marginBottom: 16, fontWeight: 400 }}>Pregătit să configurați?</h2>
           <p style={{ color: "rgba(240,237,232,0.45)", marginBottom: 32, fontSize: "1rem" }}>Ofertă personalizată în câteva minute.</p>
           <Link to="/configurator/balustrade">
