@@ -23,37 +23,32 @@ export default function HomePage() {
   return (
     <div style={{ minHeight: "100vh", color: "#f0ede8", position: "relative" }}>
 
-      {/* Fixed background image — stays visible on scroll */}
+      {/* Fixed background — visible through everything */}
       <div style={{
         position: "fixed", inset: 0, zIndex: 0,
         backgroundImage: "url('/hero.png')",
         backgroundSize: "cover",
         backgroundPosition: "center",
       }} />
-      {/* Fixed dark overlay on the image */}
       <div style={{
         position: "fixed", inset: 0, zIndex: 0,
-        background: "linear-gradient(to right, rgba(15,17,23,0.92) 0%, rgba(15,17,23,0.78) 50%, rgba(15,17,23,0.45) 100%)",
+        background: "radial-gradient(ellipse at 30% 50%, rgba(15,17,23,0.82) 0%, rgba(15,17,23,0.6) 50%, rgba(15,17,23,0.4) 100%)",
       }} />
 
-      {/* All scrollable content sits above the fixed bg */}
+      {/* Scrollable content */}
       <div style={{ position: "relative", zIndex: 1 }}>
 
         {/* Nav */}
         <nav style={{
           position: "fixed", top: 0, left: 0, right: 0, zIndex: 50,
           padding: "0 32px",
-          background: "rgba(15,17,23,0.85)", backdropFilter: "blur(20px)",
+          background: "rgba(15,17,23,0.7)", backdropFilter: "blur(24px)",
           borderBottom: "1px solid rgba(255,255,255,0.07)",
           display: "flex", alignItems: "center", justifyContent: "space-between",
           height: 64
         }}>
           <Link to="/" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
-            <img
-              src="/logo.png"
-              alt="Glass Associates"
-              style={{ height: 28, filter: "invert(1)", opacity: 0.95 }}
-            />
+            <img src="/logo.png" alt="Glass Associates" style={{ height: 28, filter: "invert(1)", opacity: 0.95 }} />
           </Link>
           <div style={{ display: "flex", gap: 2, flexWrap: "wrap", justifyContent: "flex-end" }}>
             {PRODUCTS.map(p => (
@@ -65,9 +60,9 @@ export default function HomePage() {
         {/* Hero */}
         <section style={{
           minHeight: "100vh", display: "flex", alignItems: "center",
-          padding: "0", position: "relative",
+          position: "relative",
         }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", position: "relative", padding: "140px 32px 100px" }}>
+          <div style={{ maxWidth: 1200, margin: "0 auto", width: "100%", padding: "140px 32px 100px" }}>
             <div className="anim-fade-up" style={{ marginBottom: 24 }}>
               <span style={{
                 fontSize: "0.72rem", fontWeight: 600, letterSpacing: "0.15em",
@@ -107,9 +102,9 @@ export default function HomePage() {
             {/* Stats */}
             <div style={{
               display: "grid", gridTemplateColumns: "repeat(4,1fr)",
-              marginTop: 80, border: "1px solid rgba(255,255,255,0.08)",
+              marginTop: 80, border: "1px solid rgba(255,255,255,0.1)",
               borderRadius: 16, overflow: "hidden",
-              background: "rgba(15,17,23,0.6)", backdropFilter: "blur(12px)"
+              background: "rgba(255,255,255,0.04)", backdropFilter: "blur(16px)"
             }} className="anim-fade-up-4">
               {STATS.map((s, i) => (
                 <div key={i} style={{
@@ -125,51 +120,48 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Products grid — semi-transparent bg so hero bleeds through subtly */}
-        <section style={{
-          padding: "80px 32px",
-          background: "rgba(15,17,23,0.88)",
-          backdropFilter: "blur(8px)",
-        }}>
-          <div style={{ maxWidth: 1200, margin: "0 auto" }}>
-            <div style={{ marginBottom: 56 }}>
-              <p style={{ fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "#c8a96e", marginBottom: 12 }}>Catalog Produse</p>
-              <h2 className="serif" style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 400 }}>Gama noastră completă</h2>
-            </div>
+        {/* Products — floating glass panels over the hero */}
+        <section style={{ padding: "80px 32px", maxWidth: 1200, margin: "0 auto" }}>
+          <div style={{ marginBottom: 56 }}>
+            <p style={{ fontSize: "0.75rem", letterSpacing: "0.12em", textTransform: "uppercase", color: "#c8a96e", marginBottom: 12 }}>Catalog Produse</p>
+            <h2 className="serif" style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 400 }}>Gama noastră completă</h2>
+          </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px,1fr))", gap: 20 }}>
-              {PRODUCTS.map((p, i) => (
-                <Link key={p.id} to={p.path} style={{ textDecoration: "none" }}>
-                  <div className="glass-card glass-card-hover" style={{ borderRadius: 20, padding: "32px 28px", height: "100%", display: "flex", flexDirection: "column" }}>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#c8a96e", marginBottom: 14 }}>{p.tagline}</div>
-                      <h3 style={{ fontSize: "1.35rem", fontWeight: 600, marginBottom: 10, fontFamily: "'DM Serif Display', serif" }}>{p.name}</h3>
-                      <p style={{ fontSize: "0.83rem", color: "rgba(240,237,232,0.43)", lineHeight: 1.65, marginBottom: 24 }}>{p.desc}</p>
-                    </div>
-                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <span style={{ fontSize: "0.78rem", color: "rgba(240,237,232,0.3)" }}>{p.price}</span>
-                      <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#c8a96e", fontSize: "0.8rem", fontWeight: 600 }}>
-                        Configurează <ChevronRight size={13} />
-                      </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px,1fr))", gap: 20 }}>
+            {PRODUCTS.map((p, i) => (
+              <Link key={p.id} to={p.path} style={{ textDecoration: "none" }}>
+                <div className="glass-card glass-card-hover" style={{
+                  borderRadius: 20, padding: "32px 28px", height: "100%",
+                  display: "flex", flexDirection: "column",
+                  background: "rgba(15,17,23,0.55)",
+                  backdropFilter: "blur(20px)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                }}>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontSize: "0.7rem", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#c8a96e", marginBottom: 14 }}>{p.tagline}</div>
+                    <h3 style={{ fontSize: "1.35rem", fontWeight: 600, marginBottom: 10, fontFamily: "'DM Serif Display', serif" }}>{p.name}</h3>
+                    <p style={{ fontSize: "0.83rem", color: "rgba(240,237,232,0.43)", lineHeight: 1.65, marginBottom: 24 }}>{p.desc}</p>
+                  </div>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                    <span style={{ fontSize: "0.78rem", color: "rgba(240,237,232,0.3)" }}>{p.price}</span>
+                    <div style={{ display: "flex", alignItems: "center", gap: 4, color: "#c8a96e", fontSize: "0.8rem", fontWeight: 600 }}>
+                      Configurează <ChevronRight size={13} />
                     </div>
                   </div>
-                </Link>
-              ))}
-            </div>
+                </div>
+              </Link>
+            ))}
           </div>
         </section>
 
         {/* CTA */}
-        <section style={{
-          padding: "80px 32px",
-          background: "rgba(15,17,23,0.88)",
-          backdropFilter: "blur(8px)",
-        }}>
+        <section style={{ padding: "80px 32px" }}>
           <div style={{
             maxWidth: 900, margin: "0 auto",
-            background: "linear-gradient(135deg, rgba(200,169,110,0.1), rgba(200,169,110,0.03))",
-            border: "1px solid rgba(200,169,110,0.2)", borderRadius: 24,
-            padding: "60px 48px", textAlign: "center"
+            background: "linear-gradient(135deg, rgba(200,169,110,0.12), rgba(200,169,110,0.04))",
+            border: "1px solid rgba(200,169,110,0.25)", borderRadius: 24,
+            padding: "60px 48px", textAlign: "center",
+            backdropFilter: "blur(20px)",
           }}>
             <h2 className="serif" style={{ fontSize: "clamp(1.6rem,3.5vw,2.4rem)", marginBottom: 16, fontWeight: 400 }}>Pregătit să configurați?</h2>
             <p style={{ color: "rgba(240,237,232,0.45)", marginBottom: 32, fontSize: "1rem" }}>Ofertă personalizată în câteva minute.</p>
@@ -185,7 +177,8 @@ export default function HomePage() {
           textAlign: "center",
           color: "rgba(240,237,232,0.25)",
           fontSize: "0.82rem",
-          background: "rgba(15,17,23,0.92)",
+          background: "rgba(15,17,23,0.5)",
+          backdropFilter: "blur(16px)",
         }}>
           © 2026 Glass Associates · Soluții din sticlă structurală
         </footer>
