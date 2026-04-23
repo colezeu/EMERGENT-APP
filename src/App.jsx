@@ -9,6 +9,7 @@ import CopertinaConfiguratorPage from './CopertinaConfiguratorPage.jsx'
 import SwingDoorConfiguratorPage from './SwingDoorConfiguratorPage.jsx'
 import SlidingDoorConfiguratorPage from './SlidingDoorConfiguratorPage.jsx'
 import PartitionConfiguratorPage from './PartitionConfiguratorPage.jsx'
+import OglinziConfiguratorPage from './OglinziConfiguratorPage.jsx'
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
         <Route path="/configurator/usi-batante"          element={<SwingDoorConfiguratorPage />} />
         <Route path="/configurator/usi-culisante"        element={<SlidingDoorConfiguratorPage />} />
         <Route path="/configurator/partitionari"         element={<PartitionConfiguratorPage />} />
+        <Route path="/configurator/oglinzi"             element={<OglinziConfiguratorPage />} />
       </Routes>
     </BrowserRouter>
   )
