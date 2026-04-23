@@ -89,7 +89,7 @@ export default function HomePage() {
               maxWidth: 480, fontSize: "1.05rem", lineHeight: 1.75,
               color: "rgba(240,237,232,0.6)", marginBottom: 40
             }}>
-              Configurați produse din sticlă de înaltă precizie — balustrade, cabine duș, terase, pergole, uși etc. Ofertă aproximativă instant.
+              Configurați produse din sticlă de înaltă siguranță — balustrade, cabine duș, terase, pergole etc. Ofertă aproximativă instant.
             </p>
 
             <div className="anim-fade-up-4" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
