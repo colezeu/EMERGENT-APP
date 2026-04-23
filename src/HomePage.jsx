@@ -2,22 +2,25 @@ import { Link } from "react-router-dom";
 import { ArrowRight, ChevronRight } from "lucide-react";
 
 const PRODUCTS = [
-  { id: "balustrade",        name: "Balustrade",                    tagline: "Scări, balcoane, terase",          price: "de la 150€/m²", path: "/configurator/balustrade",        desc: "Sticlă dreaptă sau pe rampă, cu butoni, profil U/V/L, mini-montanți sau canal în pardoseală." },
+  /* Rând 1 */
+  { id: "balustrade",        name: "Balustrade",                    tagline: "Scări, balcoane, terase",                   price: "de la 150€/m²", path: "/configurator/balustrade",        desc: "Sticlă dreaptă sau pe rampă, cu butoni, profil U/V/L, mini-montanți sau canal în pardoseală." },
+  { id: "inchidere-terasa",  name: "Închidere Mobilă Terase",       tagline: "Multitrack · Frameless · Ghilotină",        price: "de la 380€/m²", path: "/configurator/inchidere-terasa",  desc: "Sisteme de închidere terase și balcoane: multitrack, frameless full-glass sau ghilotină verticală." },
   { id: "cabine-dus",        name: "Cabine Duș",                    tagline: "Paravan fix, mobil, uși batante/culisante", price: "de la 120€/m²", path: "/configurator/cabine-dus",        desc: "Paravan fix sau mobil (evantai), ușă batantă sau culisantă cu glisori la vedere sau în șină." },
-  { id: "inchidere-terasa",  name: "Închidere Mobilă Terase",       tagline: "Multitrack · Frameless · Ghilotină", price: "de la 380€/m²", path: "/configurator/inchidere-terasa",  desc: "Sisteme de închidere terase și balcoane: multitrack, frameless full-glass sau ghilotină verticală." },
-  { id: "pergola",           name: "Pergole",                       tagline: "Bioclimatică · Sticlă · Sandwich",  price: "de la 420€/m²", path: "/configurator/pergola-copertina", desc: "Pergole bioclimatice cu lamele orientabile, acoperiș din sticlă culisant sau panou sandwich termoizolant." },
-  { id: "copertina",         name: "Copertine",                     tagline: "Tiranți · Consolă · Spider",        price: "de la 350€/m²", path: "/configurator/copertina",         desc: "Copertine din sticlă cu tiranți din inox, în consolă fără suport vizibil sau pe prinderi spider." },
-  { id: "usi-batante",       name: "Uși Batante",                   tagline: "Simple · Pe toc · Fonoizolante",   price: "de la 220€/m²", path: "/configurator/usi-batante",       desc: "Uși batante din securit 10–12mm, cu balamale standard sau amortizor hidraulic soft-close." },
-  { id: "usi-culisante",     name: "Uși Culisante",                 tagline: "Full glass · Buzunar · Sincron",   price: "de la 220€/m²", path: "/configurator/usi-culisante",     desc: "Prindere pe perete, tavan sau sincron fără șină jos. Cu sau fără panou fix, varianta buzunar." },
-  { id: "partitionari",      name: "Partiționări",                  tagline: "Simple · Caroiaj · Fonoizolante",  price: "de la 280€/m²", path: "/configurator/partitionari",      desc: "Partiții din sticlă securizată sau laminat acustic. Cu sau fără profile caroiaj, ușă inclusă." },
-  { id: "oglinzi",           name: "Oglinzi",                       tagline: "Clară · Bronze · Gri · Antichizată", price: "de la 80€/m²", path: "/configurator/oglinzi",          desc: "Oglinzi la comandă — clară, bronze, gri sau antichizată. Forme standard sau speciale, cu LED și anti-aburire." },
+  /* Rând 2 */
+  { id: "partitionari",      name: "Partiționări",                  tagline: "Simple · Caroiaj · Fonoizolante",           price: "de la 280€/m²", path: "/configurator/partitionari",      desc: "Partiții din sticlă securizată sau laminat acustic. Cu sau fără profile caroiaj, ușă inclusă." },
+  { id: "usi-batante",       name: "Uși Batante",                   tagline: "Simple · Pe toc · Fonoizolante",            price: "de la 220€/m²", path: "/configurator/usi-batante",       desc: "Uși batante din securit 10–12mm, cu balamale standard sau amortizor hidraulic soft-close." },
+  { id: "usi-culisante",     name: "Uși Culisante",                 tagline: "Full glass · Buzunar · Sincron",            price: "de la 220€/m²", path: "/configurator/usi-culisante",     desc: "Prindere pe perete, tavan sau sincron fără șină jos. Cu sau fără panou fix, varianta buzunar." },
+  /* Rând 3 */
+  { id: "pergola",           name: "Pergole",                       tagline: "Bioclimatică · Sticlă · Sandwich",          price: "de la 420€/m²", path: "/configurator/pergola-copertina", desc: "Pergole bioclimatice cu lamele orientabile, acoperiș din sticlă culisant sau panou sandwich termoizolant." },
+  { id: "copertina",         name: "Copertine",                     tagline: "Tiranți · Consolă · Spider",                price: "de la 350€/m²", path: "/configurator/copertina",         desc: "Copertine din sticlă cu tiranți din inox, în consolă fără suport vizibil sau pe prinderi spider." },
+  { id: "oglinzi",           name: "Oglinzi",                       tagline: "Clară · Bronze · Gri · Antichizată",        price: "de la 80€/m²",  path: "/configurator/oglinzi",          desc: "Oglinzi la comandă — clară, bronze, gri sau antichizată. Forme standard sau speciale, cu LED și anti-aburire." },
 ];
 
 const STATS = [
   { value: "2400+", label: "Proiecte finalizate" },
   { value: "18 ani", label: "Experiență" },
   { value: "CE", label: "Certificare europeană" },
-  { value: "1 min", label: "Ofertă personalizată" },
+  { value: "instant", label: "Ofertă personalizată" },
 ];
 
 export default function HomePage() {
@@ -86,7 +89,7 @@ export default function HomePage() {
               maxWidth: 480, fontSize: "1.05rem", lineHeight: 1.75,
               color: "rgba(240,237,232,0.6)", marginBottom: 40
             }}>
-              Configurați produse din sticlă de înaltă precizie — balustrade, cabine duș, terase, pergole, uși și partiționări. Ofertă în 48h.
+              Configurați produse din sticlă de înaltă precizie — balustrade, cabine duș, terase, pergole, uși și partiționări. Ofertă aproximativă instant.
             </p>
 
             <div className="anim-fade-up-4" style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
@@ -95,7 +98,7 @@ export default function HomePage() {
                   Configurează Acum <ArrowRight size={16} />
                 </button>
               </Link>
-              <a href="mailto:contact@glassassociates.ro">
+              <a href="mailto:office@glass.associates">
                 <button className="btn-ghost">Contact Direct</button>
               </a>
             </div>
@@ -128,7 +131,7 @@ export default function HomePage() {
             <h2 className="serif" style={{ fontSize: "clamp(1.8rem,4vw,2.8rem)", fontWeight: 400 }}>Gama noastră completă</h2>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px,1fr))", gap: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 20 }}>
             {PRODUCTS.map((p, i) => (
               <Link key={p.id} to={p.path} style={{ textDecoration: "none" }}>
                 <div className="glass-card glass-card-hover" style={{
