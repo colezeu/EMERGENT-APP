@@ -10,13 +10,14 @@ const PRODUCTS = [
   { id: "usi-batante",       name: "Uși Batante",                   tagline: "Simple · Pe toc · Fonoizolante",   price: "de la 220€/m²", path: "/configurator/usi-batante",       desc: "Uși batante din securit 10–12mm, cu balamale standard sau amortizor hidraulic soft-close." },
   { id: "usi-culisante",     name: "Uși Culisante",                 tagline: "Full glass · Buzunar · Sincron",   price: "de la 220€/m²", path: "/configurator/usi-culisante",     desc: "Prindere pe perete, tavan sau sincron fără șină jos. Cu sau fără panou fix, varianta buzunar." },
   { id: "partitionari",      name: "Partiționări",                  tagline: "Simple · Caroiaj · Fonoizolante",  price: "de la 280€/m²", path: "/configurator/partitionari",      desc: "Partiții din sticlă securizată sau laminat acustic. Cu sau fără profile caroiaj, ușă inclusă." },
+  { id: "oglinzi",           name: "Oglinzi",                       tagline: "Clară · Bronze · Gri · Antichizată", price: "de la 80€/m²", path: "/configurator/oglinzi",          desc: "Oglinzi la comandă — clară, bronze, gri sau antichizată. Forme standard sau speciale, cu LED și anti-aburire." },
 ];
 
 const STATS = [
   { value: "2400+", label: "Proiecte finalizate" },
   { value: "18 ani", label: "Experiență" },
   { value: "CE", label: "Certificare europeană" },
-  { value: "48h", label: "Ofertă personalizată" },
+  { value: "1 min", label: "Ofertă personalizată" },
 ];
 
 export default function HomePage() {
