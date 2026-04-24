@@ -28,7 +28,7 @@
         "profil-pardoseala": {
           "name": "Profil Pardoseală",
           "pricePerMeter": 1220,
-          "desc": "Canal integrat în pardoseală"
+          "desc": "Canal montat pe pardoseală"
         }
       },
       "profileShapes": {
@@ -61,17 +61,17 @@
         "handrail": {
           "name": "Mână Curentă Inox",
           "pricePerMeter": 45,
-          "desc": "Rotundă Ø42mm, satinat"
+          "desc": "Rotunjită Ø42mm, (structurală)"
         },
         "handrail-slim": {
-          "name": "Mână Curentă Slim (structurală)",
-          "pricePerMeter": 85,
-          "desc": "Profil plat 40x10mm, aspect arhitectural"
+          "name": "Mână Curentă Slim",
+          "pricePerMeter": 85,4
+          "desc": "Profil plat, aspect minimalist"
         },
         "led": {
           "name": "Iluminare LED Integrată",
           "price": 150,
-          "desc": "Bandă LED 3000K în profilul de bază"
+          "desc": "Bandă LED 3000K în mâna curentă"
         }
       }
     },
@@ -82,12 +82,12 @@
         "paravan-fix-profil": {
           "name": "Paravan Fix cu Profil",
           "price": 0,
-          "desc": "Fix, cu profil perimetral"
+          "desc": "Fix, cu profil perete/jos"
         },
         "paravan-fix-punctual": {
-          "name": "Paravan Fix cu Prinderi Fine",
+          "name": "Paravan Fix cu Prinderi Fixe",
           "price": 50,
-          "desc": "Fix, prinderi punctuale inox"
+          "desc": "Fix, prinderi punctuale"
         },
         "paravan-mobil": {
           "name": "Paravan Mobil (evantai)",
@@ -97,7 +97,7 @@
         "usa-batanta": {
           "name": "Ușă Batantă",
           "price": 200,
-          "desc": "Deschidere 180°, balamale ascunse"
+          "desc": "Deschidere 180°, balamale prinse pe perete"
         },
         "usa-culisanta-vedere": {
           "name": "Ușă Culisantă cu Glisori la Vedere",
@@ -107,7 +107,7 @@
         "usa-culisanta-sina": {
           "name": "Ușă Culisantă cu Glisori în Șină",
           "price": 380,
-          "desc": "Sistem ascuns, soft-close"
+          "desc": "Cărucioare ascunse, soft-close"
         }
       },
       "glassTypes": {
@@ -129,14 +129,14 @@
           "desc": "Sticlă clară standard"
         },
         "frosted": {
-          "name": "Sablată (Opacă)",
+          "name": "Satinată (Opacă)",
           "pricePerSqm": 25,
           "desc": "Intimitate totală, aspect mat"
         },
         "nano": {
-          "name": "Nano Anti-Calcar",
+          "name": "Tratament Nano Anti-Calcar",
           "pricePerSqm": 35,
-          "desc": "Respinge apa și calcarul"
+          "desc": "Respinge mizeria și calcarul"
         }
       },
       "options": {
@@ -164,17 +164,17 @@
         "multitrack": {
           "name": "Multitrack",
           "pricePerSqm": 380,
-          "desc": "Panouri culisante pe șine multiple, stivuire laterală"
+          "desc": "Panouri culisante pe șine multiple, stivuire suprapusă"
         },
         "frameless": {
           "name": "Frameless",
           "pricePerSqm": 450,
-          "desc": "Sticlă full-glass fără profile, pivot la sol și tavan"
+          "desc": "Sticlă full-glass fără profile, stivuire pe perete"
         },
         "ghilotina": {
           "name": "Ghilotină",
           "pricePerSqm": 420,
-          "desc": "Panou unic culisant vertical, ascuns în plafon"
+          "desc": "Panouri culisante vertical"
         }
       },
       "glassTypes": {
