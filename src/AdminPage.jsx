@@ -76,6 +76,7 @@ export default function AdminPage() {
     "usi-batante": "Uși Batante",
     "usi-culisante": "Uși Culisante",
     "partitionari": "Partiționări"
+    "oglinzi": "Oglinzi"
   };
 
   const renderFields = (productKey, obj, prefix) => {
