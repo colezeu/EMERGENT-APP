@@ -93,16 +93,16 @@ export default function BalustradeConfiguratorPage() {
               <OptionBtn key={k} selected={hardware===k} onClick={() => setHardware(k)} label={d.name} desc={d.desc} price={`${d.pricePerMeter}€/m`} />
             ))}
             {showProfileShape && (
-              <div style={{ marginTop:8 }}>
-                <div style={{ fontSize:"0.78rem", color:"rgba(240,237,232,0.4)", marginBottom:8 }}>Formă profil:</div>
-                <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8 }}>
-                  {Object.entries(p.profileShapes).map(([k,d]) => (
-                    <OptionBtn key={k} selected={profileShape===k} onClick={() => setProfileShape(k)}
-                      label={d.name} price={d.pricePerMeter > 0 ? `+${d.pricePerMeter}€/m` : "Inclus"} center />
-                  ))}
-                </div>
-              </div>
-            )}
+  <div style={{ marginTop:8 }}>
+    <div style={{ fontSize:"0.78rem", color:"rgba(240,237,232,0.4)", marginBottom:8 }}>Formă profil:</div>
+    <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8 }}>
+      {Object.entries(p.profileShapes).map(([k,d]) => (
+        <OptionBtn key={k} selected={profileShape===k} onClick={() => setProfileShape(k)}
+          label={d.name} price={d.pricePerMeter > 0 ? `+${d.pricePerMeter}€/m` : "Inclus"} center />
+      ))}
+    </div>
+  </div>
+)}
           </SectionCard>
 
           <SectionCard num="04" label="Calitate Sticlă">
