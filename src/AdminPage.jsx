@@ -17,16 +17,21 @@ export default function AdminPage() {
     setTimeout(() => setError(false), 2000);
     return;
   }
-  fetch("/catalog.json")
+  fetch("/catalog.json", { cache: "no-store" })
     .then(r => r.json())
     .then(d => {
       setCatalog(d);
       setLoaded(true);
       setAuth(true);
     })
-    .catch(err => {
-      console.error("Eroare la încărcarea catalogului:", err);
-      alert("Eroare la încărcarea catalogului. Verifică că public/catalog.json există.");
+    .catch(() => {
+      // Foloseste fallback direct
+      setCatalog({
+        vatRate: 0.21,
+        products: {}
+      });
+      setLoaded(true);
+      setAuth(true);
     });
 };
 
