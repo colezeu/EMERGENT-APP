@@ -5,6 +5,8 @@ import BalustradePreview3D from "./BalustradePreview2D.jsx";
 
 const FALLBACK = { name:"Balustrade", basePrice:150, glassShapes:{ dreapta:{name:"Sticlă Dreaptă",desc:"Panou drept standard"}, forma:{name:"Sticlă Formă (rampă)",desc:"Tăiat pe unghi / curbă"} }, hardwareTypes:{ butoni:{name:"Cu Butoni Inox",pricePerMeter:155,desc:"Puncte de fixare, design minimalist"}, "mini-montanti":{name:"Cu Mini-Montanți",pricePerMeter:195,desc:"Montanți intermediari inox"}, "profil-pardoseala":{name:"Profil Pardoseală",pricePerMeter:1220,desc:"Canal integrat în pardoseală"} }, profileShapes:{ U:{name:"Formă U",pricePerMeter:0}, V:{name:"Formă V",pricePerMeter:10}, L:{name:"Formă L",pricePerMeter:10} }, glassTypes:{ "662mm":{name:"Sticlă Securizată/Laminată 662 (13mm)",pricePerSqm:150,desc:"Laminat 66.2, ideal interior"}, "882mm":{name:"Sticlă Securizată/Laminată 882 (17mm)",pricePerSqm:200,desc:"Standard exterior"} }, options:{ handrail:{name:"Mână Curentă Inox",pricePerMeter:45,desc:"Rotundă Ø42mm, satinat"}, "handrail-slim":{name:"Mână Curentă Slim",pricePerMeter:85,desc:"Profil plat 40x10mm"}, led:{name:"Iluminare LED",price:150,desc:"Bandă LED 3000K"} } };
 
+const PROFIL_IMAGES = { U: "/profil-u.png", V: "/profil-y.png", L: "/profil-l.png" };
+
 export default function BalustradeConfiguratorPage() {
   const [product, setProduct] = useState(null);
   const [vatRate, setVatRate] = useState(0.21);
@@ -22,10 +24,8 @@ export default function BalustradeConfiguratorPage() {
   useEffect(() => {
     fetch("/catalog.json").then(r => r.json())
       .then(d => {
-  console.log("CATALOG OK:", JSON.stringify(d.products.balustrade));
-  setProduct(d.products.balustrade);
-  setVatRate(d.vatRate);
-        // Seteaza primul glassType disponibil din catalog
+        setProduct(d.products.balustrade);
+        setVatRate(d.vatRate);
         const firstGlass = Object.keys(d.products.balustrade.glassTypes)[0];
         setGlassType(firstGlass);
       })
@@ -93,16 +93,27 @@ export default function BalustradeConfiguratorPage() {
               <OptionBtn key={k} selected={hardware===k} onClick={() => setHardware(k)} label={d.name} desc={d.desc} price={`${d.pricePerMeter}€/m`} />
             ))}
             {showProfileShape && (
-  <div style={{ marginTop:8 }}>
-    <div style={{ fontSize:"0.78rem", color:"rgba(240,237,232,0.4)", marginBottom:8 }}>Formă profil:</div>
-    <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8 }}>
-      {Object.entries(p.profileShapes).map(([k,d]) => (
-        <OptionBtn key={k} selected={profileShape===k} onClick={() => setProfileShape(k)}
-          label={d.name} price={d.pricePerMeter > 0 ? `+${d.pricePerMeter}€/m` : "Inclus"} center />
-      ))}
-    </div>
-  </div>
-)}
+              <div style={{ marginTop:8 }}>
+                <div style={{ fontSize:"0.78rem", color:"rgba(240,237,232,0.4)", marginBottom:8 }}>Formă profil:</div>
+                <div style={{ display:"grid", gridTemplateColumns:"repeat(3,1fr)", gap:8 }}>
+                  {Object.entries(p.profileShapes).map(([k,d]) => (
+                    <OptionBtn key={k} selected={profileShape===k} onClick={() => setProfileShape(k)}
+                      label={d.name} price={d.pricePerMeter > 0 ? `+${d.pricePerMeter}€/m` : "Inclus"} center />
+                  ))}
+                </div>
+                {/* Imagine detaliu profil */}
+                <div style={{ marginTop:16, borderRadius:12, overflow:"hidden", border:"1px solid rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.02)" }}>
+                  <div style={{ fontSize:"0.72rem", color:"rgba(240,237,232,0.35)", padding:"10px 14px", borderBottom:"1px solid rgba(255,255,255,0.06)", letterSpacing:"0.08em", textTransform:"uppercase" }}>
+                    Detaliu secțiune · Profil {profileShape}
+                  </div>
+                  <img
+                    src={PROFIL_IMAGES[profileShape]}
+                    alt={`Profil ${profileShape}`}
+                    style={{ width:"100%", display:"block", maxHeight:240, objectFit:"contain", padding:"16px", filter:"invert(0.88) brightness(0.85)" }}
+                  />
+                </div>
+              </div>
+            )}
           </SectionCard>
 
           <SectionCard num="04" label="Calitate Sticlă">
