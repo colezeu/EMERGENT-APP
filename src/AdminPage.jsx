@@ -11,37 +11,23 @@ export default function AdminPage() {
   const [catalog, setCatalog] = useState(null);
   const [loaded, setLoaded] = useState(false);
 
- const login = () => {
-  if (pass !== PASSWORD) {
-    setError(true);
-    setTimeout(() => setError(false), 2000);
-    return;
-  }
-  fetch("/catalog.json", { cache: "no-store" })
-    .then(r => r.json())
-    .then(d => {
-      setCatalog(d);
-      setLoaded(true);
-      setAuth(true);
-    })
-    .catch(() => {
-      // Foloseste fallback direct
-      setCatalog({
-        vatRate: 0.21,
-        products: {}
-      });
-      setLoaded(true);
-      setAuth(true);
-    });
-};
+  const login = () => {
+    if (pass !== PASSWORD) {
+      setError(true);
+      setTimeout(() => setError(false), 2000);
+      return;
+    }
+    fetch("/catalog.json", { cache: "no-store" })
+      .then(r => r.json())
+      .then(d => { setCatalog(d); setLoaded(true); setAuth(true); })
+      .catch(() => { setCatalog({ vatRate: 0.21, products: {} }); setLoaded(true); setAuth(true); });
+  };
 
   const exportJson = () => {
     const blob = new Blob([JSON.stringify(catalog, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
-    a.href = url;
-    a.download = "catalog.json";
-    a.click();
+    a.href = url; a.download = "catalog.json"; a.click();
     URL.revokeObjectURL(url);
   };
 
@@ -61,13 +47,7 @@ export default function AdminPage() {
   };
 
   const PRICE_KEYS = ["pricePerSqm", "pricePerMeter", "price", "pricePerUnit", "basePrice"];
-  const LABELS = {
-    pricePerSqm: "Preț/m²",
-    pricePerMeter: "Preț/m",
-    price: "Preț fix",
-    pricePerUnit: "Preț/buc",
-    basePrice: "Preț de bază"
-  };
+  const LABELS = { pricePerSqm:"Preț/m²", pricePerMeter:"Preț/m", price:"Preț fix", pricePerUnit:"Preț/buc", basePrice:"Preț de bază" };
   const PRODUCT_NAMES = {
     "balustrade": "Balustrade",
     "cabine-dus": "Cabine Duș",
@@ -75,69 +55,43 @@ export default function AdminPage() {
     "pergola-copertina": "Pergolă & Copertină",
     "usi-batante": "Uși Batante",
     "usi-culisante": "Uși Culisante",
-    "partitionari": "Partiționări"
+    "partitionari": "Partiționări",
     "oglinzi": "Oglinzi"
   };
 
-  const renderFields = (productKey, obj, prefix) => {
-  if (!prefix) prefix = "";
-  const results = [];
-  const traverse = (current, path) => {
-    if (typeof current !== "object" || current === null) return;
-    Object.entries(current).forEach(([key, val]) => {
-      const fullPath = path ? `${path}.${key}` : key;
-      if (typeof val === "number" && PRICE_KEYS.includes(key)) {
-        const parentPath = fullPath.split(".").slice(0, -1).join(".");
-        const parentObj = parentPath.split(".").reduce((o, k) => o?.[k], catalog.products[productKey]);
-        const parentName = parentObj?.name || parentPath.split(".").pop() || key;
-        results.push(
-          <div key={fullPath} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
-            <div>
-              <div style={{ fontSize:"0.85rem", color:"#f0ede8", fontWeight:500 }}>{parentName}</div>
-              <div style={{ fontSize:"0.75rem", color:"rgba(240,237,232,0.35)" }}>{LABELS[key] || key}</div>
+  const renderFields = (productKey, obj) => {
+    const results = [];
+    const traverse = (current, path) => {
+      if (typeof current !== "object" || current === null) return;
+      Object.entries(current).forEach(([key, val]) => {
+        const fullPath = path ? `${path}.${key}` : key;
+        if (typeof val === "number" && PRICE_KEYS.includes(key)) {
+          const parentPath = fullPath.split(".").slice(0, -1).join(".");
+          const parentObj = parentPath.split(".").reduce((o, k) => o?.[k], catalog.products[productKey]);
+          const parentName = parentObj?.name || parentPath.split(".").pop() || key;
+          results.push(
+            <div key={fullPath} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
+              <div>
+                <div style={{ fontSize:"0.85rem", color:"#f0ede8", fontWeight:500 }}>{parentName}</div>
+                <div style={{ fontSize:"0.75rem", color:"rgba(240,237,232,0.35)" }}>{LABELS[key] || key}</div>
+              </div>
+              <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+                <input
+                  type="number" step="1" value={val}
+                  onChange={e => updatePrice(productKey, fullPath, e.target.value)}
+                  style={{ width:90, background:"rgba(255,255,255,0.06)", border:"1.5px solid rgba(200,169,110,0.3)", borderRadius:8, padding:"6px 10px", color:"#c8a96e", fontWeight:700, fontSize:"0.95rem", textAlign:"right", outline:"none", fontFamily:"'DM Sans', sans-serif" }}
+                />
+                <span style={{ color:"rgba(240,237,232,0.4)", fontSize:"0.8rem" }}>€</span>
+              </div>
             </div>
-            <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-              <input
-                type="number" step="1" value={val}
-                onChange={e => updatePrice(productKey, fullPath, e.target.value)}
-                style={{ width:90, background:"rgba(255,255,255,0.06)", border:"1.5px solid rgba(200,169,110,0.3)", borderRadius:8, padding:"6px 10px", color:"#c8a96e", fontWeight:700, fontSize:"0.95rem", textAlign:"right", outline:"none", fontFamily:"'DM Sans', sans-serif" }}
-              />
-              <span style={{ color:"rgba(240,237,232,0.4)", fontSize:"0.8rem" }}>€</span>
-            </div>
-          </div>
-        );
-      } else if (typeof val === "object" && val !== null) {
-        traverse(val, fullPath);
-      }
-    });
-  };
-  traverse(obj, prefix);
-  return results;
-};
-      if (PRICE_KEYS.includes(key)) {
-        const parts = prefix.split(".");
-        let parentObj = catalog.products[productKey];
-        for (const p of parts) { if (parentObj && parentObj[p]) parentObj = parentObj[p]; }
-        const parentName = parentObj?.name || parts[parts.length - 1];
-        return [(
-          <div key={path} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
-            <div>
-              <div style={{ fontSize:"0.85rem", color:"#f0ede8", fontWeight:500 }}>{parentName}</div>
-              <div style={{ fontSize:"0.75rem", color:"rgba(240,237,232,0.35)" }}>{LABELS[key]}</div>
-            </div>
-            <div style={{ display:"flex", alignItems:"center", gap:6 }}>
-              <input
-                type="number" step="1" value={val}
-                onChange={e => updatePrice(productKey, path, e.target.value)}
-                style={{ width:90, background:"rgba(255,255,255,0.06)", border:"1.5px solid rgba(200,169,110,0.3)", borderRadius:8, padding:"6px 10px", color:"#c8a96e", fontWeight:700, fontSize:"0.95rem", textAlign:"right", outline:"none", fontFamily:"'DM Sans', sans-serif" }}
-              />
-              <span style={{ color:"rgba(240,237,232,0.4)", fontSize:"0.8rem" }}>€</span>
-            </div>
-          </div>
-        )];
-      }
-      return [];
-    });
+          );
+        } else if (typeof val === "object" && val !== null) {
+          traverse(val, fullPath);
+        }
+      });
+    };
+    traverse(obj, "");
+    return results;
   };
 
   if (!auth) {
@@ -150,11 +104,8 @@ export default function AdminPage() {
           <h2 style={{ fontFamily:"'DM Serif Display', serif", fontSize:"1.6rem", marginBottom:8, color:"#f0ede8" }}>Admin</h2>
           <p style={{ color:"rgba(240,237,232,0.35)", fontSize:"0.85rem", marginBottom:28 }}>Glass Associates · Catalog Prețuri</p>
           <input
-            className="input-field"
-            type="password"
-            placeholder="Parolă"
-            value={pass}
-            onChange={e => setPass(e.target.value)}
+            className="input-field" type="password" placeholder="Parolă"
+            value={pass} onChange={e => setPass(e.target.value)}
             onKeyDown={e => e.key === "Enter" && login()}
             style={{ marginBottom:12, textAlign:"center", border: error ? "1.5px solid rgba(255,80,80,0.6)" : undefined }}
           />
