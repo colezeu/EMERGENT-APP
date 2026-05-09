@@ -3,7 +3,7 @@
   "products": {
     "balustrade": {
       "name": "Balustrade",
-      "basePrice": 150,
+      "basePrice": 100,
       "glassShapes": {
         "dreapta": {
           "name": "Sticlă Dreaptă (dreptunghiulară)",
@@ -17,17 +17,17 @@
       "hardwareTypes": {
         "butoni": {
           "name": "Cu Butoni Inox",
-          "pricePerMeter": 10,
+          "pricePerMeter": 85,
           "desc": "Puncte de fixare, design minimalist"
         },
         "mini-montanti": {
           "name": "Cu Mini-Montanți",
-          "pricePerMeter": 100,
+          "pricePerMeter": 78,
           "desc": "Montanți intermediari inox"
         },
         "profil-pardoseala": {
           "name": "Profil Pardoseală",
-          "pricePerMeter": 1000,
+          "pricePerMeter": 50,
           "desc": "Canal montat pe pardoseală"
         }
       },
@@ -38,39 +38,39 @@
         },
         "V": {
           "name": "Formă V",
-          "pricePerMeter": 10
+          "pricePerMeter": 108
         },
         "L": {
           "name": "Formă L",
-          "pricePerMeter": 10
+          "pricePerMeter": 99
         }
       },
       "glassTypes": {
         "662mm": {
           "name": "Sticlă Securizată/Laminată 662 (13mm)",
-          "pricePerSqm": 200,
+          "pricePerSqm": 84,
           "desc": "Laminat 66.2, ideal interior rezidențial"
         },
         "882mm": {
           "name": "Sticlă Securizată/Laminată 882 (17mm)",
-          "pricePerSqm": 400,
+          "pricePerSqm": 98,
           "desc": "Standard exterior, rezistență ridicată"
         }
       },
       "options": {
         "handrail": {
           "name": "Mână Curentă Inox",
-          "pricePerMeter": 10,
+          "pricePerMeter": 16,
           "desc": "Rotunjită Ø42mm, (structurală)"
         },
         "handrail-slim": {
           "name": "Mână Curentă Slim",
-          "pricePerMeter": 20,
+          "pricePerMeter": 5,
           "desc": "Profil plat, aspect minimalist"
         },
         "led": {
           "name": "Iluminare LED Integrată",
-          "price": 150,
+          "price": 250,
           "desc": "Bandă LED 3000K în mâna curentă"
         }
       }
