@@ -80,12 +80,40 @@ export default function AdminPage() {
   };
 
   const renderFields = (productKey, obj, prefix) => {
-    if (!prefix) prefix = "";
-    return Object.entries(obj).flatMap(([key, val]) => {
-      const path = prefix ? `${prefix}.${key}` : key;
-      if (typeof val === "object" && val !== null) {
-        return renderFields(productKey, val, path);
+  if (!prefix) prefix = "";
+  const results = [];
+  const traverse = (current, path) => {
+    if (typeof current !== "object" || current === null) return;
+    Object.entries(current).forEach(([key, val]) => {
+      const fullPath = path ? `${path}.${key}` : key;
+      if (typeof val === "number" && PRICE_KEYS.includes(key)) {
+        const parentPath = fullPath.split(".").slice(0, -1).join(".");
+        const parentObj = parentPath.split(".").reduce((o, k) => o?.[k], catalog.products[productKey]);
+        const parentName = parentObj?.name || parentPath.split(".").pop() || key;
+        results.push(
+          <div key={fullPath} style={{ display:"flex", justifyContent:"space-between", alignItems:"center", padding:"10px 16px", borderBottom:"1px solid rgba(255,255,255,0.05)" }}>
+            <div>
+              <div style={{ fontSize:"0.85rem", color:"#f0ede8", fontWeight:500 }}>{parentName}</div>
+              <div style={{ fontSize:"0.75rem", color:"rgba(240,237,232,0.35)" }}>{LABELS[key] || key}</div>
+            </div>
+            <div style={{ display:"flex", alignItems:"center", gap:6 }}>
+              <input
+                type="number" step="1" value={val}
+                onChange={e => updatePrice(productKey, fullPath, e.target.value)}
+                style={{ width:90, background:"rgba(255,255,255,0.06)", border:"1.5px solid rgba(200,169,110,0.3)", borderRadius:8, padding:"6px 10px", color:"#c8a96e", fontWeight:700, fontSize:"0.95rem", textAlign:"right", outline:"none", fontFamily:"'DM Sans', sans-serif" }}
+              />
+              <span style={{ color:"rgba(240,237,232,0.4)", fontSize:"0.8rem" }}>€</span>
+            </div>
+          </div>
+        );
+      } else if (typeof val === "object" && val !== null) {
+        traverse(val, fullPath);
       }
+    });
+  };
+  traverse(obj, prefix);
+  return results;
+};
       if (PRICE_KEYS.includes(key)) {
         const parts = prefix.split(".");
         let parentObj = catalog.products[productKey];
