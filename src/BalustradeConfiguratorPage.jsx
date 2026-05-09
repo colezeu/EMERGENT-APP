@@ -39,7 +39,7 @@ export default function BalustradeConfiguratorPage() {
   const skirt = hardware === "butoni" ? 0.35
     : (hardware === "profil" && profileShape === "V") ? 0.10
     : 0;
-
+  const panelCount = Math.ceil((parseFloat(dims.length) || 0) / 1.1);
   const calculate = async () => {
     if (!p) return;
     setCalculating(true);
@@ -164,6 +164,7 @@ export default function BalustradeConfiguratorPage() {
               { label:"Sticlă",   value:`${quote.glassPrice}€` },
               quote.handrailP > 0 && { label:"Mână curentă", value:`+${quote.handrailP}€`, accent:true },
               quote.ledP > 0      && { label:"LED",           value:`+${quote.ledP}€`,      accent:true },
+              quote.taxaForma > 0 && { label:"Taxă formă", value:`+${quote.taxaForma}€`, accent:true },
             ] : []}
           />
         </div>
