@@ -12,21 +12,23 @@ export default function AdminPage() {
   const [loaded, setLoaded] = useState(false);
 
   const login = () => {
-    if (pass !== PASSWORD) {
-      setError(true);
-      setTimeout(() => setError(false), 2000);
-      return;
-    }
-    fetch("/catalog.json", { cache: "no-store" })
-      .then(r => r.json())
-      .then(d => {
-  console.log("PRODUSE:", Object.keys(d.products || {}));
-  setCatalog(d);
-  setLoaded(true);
-  setAuth(true);
-})
-  };
-
+  if (pass !== PASSWORD) {
+    setError(true);
+    setTimeout(() => setError(false), 2000);
+    return;
+  }
+  fetch("https://emergent-app-weld.vercel.app/catalog.json")
+    .then(r => r.json())
+    .then(d => {
+      setCatalog(d);
+      setLoaded(true);
+      setAuth(true);
+    })
+    .catch(err => {
+      alert("Eroare: " + err.message);
+    });
+};
+  
   const exportJson = () => {
     const blob = new Blob([JSON.stringify(catalog, null, 2)], { type: "application/json" });
     const url = URL.createObjectURL(blob);
