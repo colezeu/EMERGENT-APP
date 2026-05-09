@@ -17,17 +17,17 @@
       "hardwareTypes": {
         "butoni": {
           "name": "Cu Butoni Inox",
-          "pricePerMeter": 155,
+          "pricePerMeter": 10,
           "desc": "Puncte de fixare, design minimalist"
         },
         "mini-montanti": {
           "name": "Cu Mini-Montanți",
-          "pricePerMeter": 195,
+          "pricePerMeter": 100,
           "desc": "Montanți intermediari inox"
         },
         "profil-pardoseala": {
           "name": "Profil Pardoseală",
-          "pricePerMeter": 1220,
+          "pricePerMeter": 1000,
           "desc": "Canal montat pe pardoseală"
         }
       },
@@ -48,24 +48,24 @@
       "glassTypes": {
         "662mm": {
           "name": "Sticlă Securizată/Laminată 662 (13mm)",
-          "pricePerSqm": 150,
+          "pricePerSqm": 200,
           "desc": "Laminat 66.2, ideal interior rezidențial"
         },
         "882mm": {
           "name": "Sticlă Securizată/Laminată 882 (17mm)",
-          "pricePerSqm": 200,
+          "pricePerSqm": 400,
           "desc": "Standard exterior, rezistență ridicată"
         }
       },
       "options": {
         "handrail": {
           "name": "Mână Curentă Inox",
-          "pricePerMeter": 45,
+          "pricePerMeter": 10,
           "desc": "Rotunjită Ø42mm, (structurală)"
         },
         "handrail-slim": {
           "name": "Mână Curentă Slim",
-          "pricePerMeter": 85,
+          "pricePerMeter": 20,
           "desc": "Profil plat, aspect minimalist"
         },
         "led": {
