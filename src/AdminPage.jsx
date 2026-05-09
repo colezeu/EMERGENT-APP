@@ -19,8 +19,12 @@ export default function AdminPage() {
     }
     fetch("/catalog.json", { cache: "no-store" })
       .then(r => r.json())
-      .then(d => { setCatalog(d); setLoaded(true); setAuth(true); })
-      .catch(() => { setCatalog({ vatRate: 0.21, products: {} }); setLoaded(true); setAuth(true); });
+      .then(d => {
+  console.log("PRODUSE:", Object.keys(d.products || {}));
+  setCatalog(d);
+  setLoaded(true);
+  setAuth(true);
+})
   };
 
   const exportJson = () => {
