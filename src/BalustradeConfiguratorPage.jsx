@@ -57,11 +57,12 @@ export default function BalustradeConfiguratorPage() {
     const hwPrice    = len * (p.hardwareTypes[hardware]?.pricePerMeter || 0);
     const profExtra  = showProfileShape ? len * (p.profileShapes[profileShape]?.pricePerMeter || 0) : 0;
     const glassPrice = area * (p.glassTypes[glassType]?.pricePerSqm || 0);
+    const taxaForma = glassShape === "forma" ? (p.glassShapes.forma?.taxaForma || 0) * panelCount : 0;
     const handrailP  = handrail !== "none" ? len * (p.options[handrail]?.pricePerMeter || 0) : 0;
     const ledP       = includeLed ? (p.options.led?.price || 0) : 0;
-    const raw = p.basePrice + hwPrice + profExtra + glassPrice + handrailP + ledP;
+    const raw = p.basePrice + hwPrice + profExtra + glassPrice + taxaForma + handrailP + ledP;
     const { subtotal, vat, total } = calcQuote(raw, vatRate);
-    setQuote({ area:area.toFixed(2), hwPrice:Math.round(hwPrice+profExtra), glassPrice:Math.round(glassPrice), handrailP:Math.round(handrailP), ledP, subtotal, vat, total });
+    setQuote({ area:area.toFixed(2), hwPrice:Math.round(hwPrice+profExtra), glassPrice:Math.round(glassPrice), taxaForma:Math.round(taxaForma), handrailP:Math.round(handrailP), ledP, subtotal, vat, total });
     setCalculating(false);
   };
 
