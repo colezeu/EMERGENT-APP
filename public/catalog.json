@@ -5,14 +5,8 @@
       "name": "Balustrade",
       "basePrice": 100,
       "glassShapes": {
-        "dreapta": {
-          "name": "Sticlă Dreaptă (dreptunghiulară)",
-          "desc": "Panou drept, standard"
-        },
-        "forma": {
-          "name": "Sticlă Formă (pe rampă)",
-          "desc": "Tăiată pe unghi"
-        }
+  "dreapta": { "name": "Sticlă Dreaptă (dreptunghiulară)", "desc": "Panou drept, standard", "taxaForma": 0 },
+  "forma":   { "name": "Sticlă Formă (pe rampă)", "desc": "Tăiată pe unghi", "taxaForma": 45 }
       },
       "hardwareTypes": {
         "butoni": {
