@@ -3,9 +3,9 @@ import { ConfigHeader, SectionCard, OptionBtn, ToggleOption, NumberInput, QuoteS
 import QuoteModal from "./QuoteModal.jsx";
 import BalustradePreview3D from "./BalustradePreview2D.jsx";
 
-const FALLBACK = { name:"Balustrade", basePrice:150, glassShapes:{ dreapta:{name:"Sticlă Dreaptă",desc:"Panou drept standard"}, forma:{name:"Sticlă Formă (rampă)",desc:"Tăiat pe unghi / curbă"} }, hardwareTypes:{ butoni:{name:"Cu Butoni Inox",pricePerMeter:155,desc:"Puncte de fixare, design minimalist"}, "mini-montanti":{name:"Cu Mini-Montanți",pricePerMeter:195,desc:"Montanți intermediari inox"}, "profil-pardoseala":{name:"Profil Pardoseală",pricePerMeter:1220,desc:"Canal integrat în pardoseală"} }, profileShapes:{ U:{name:"Formă U",pricePerMeter:0}, V:{name:"Formă V",pricePerMeter:10}, L:{name:"Formă L",pricePerMeter:10} }, glassTypes:{ "662mm":{name:"Sticlă Securizată/Laminată 662 (13mm)",pricePerSqm:150,desc:"Laminat 66.2, ideal interior"}, "882mm":{name:"Sticlă Securizată/Laminată 882 (17mm)",pricePerSqm:200,desc:"Standard exterior"} }, options:{ handrail:{name:"Mână Curentă Inox",pricePerMeter:45,desc:"Rotundă Ø42mm, satinat"}, "handrail-slim":{name:"Mână Curentă Slim",pricePerMeter:85,desc:"Profil plat 40x10mm"}, led:{name:"Iluminare LED",price:150,desc:"Bandă LED 3000K"} } };
+const FALLBACK = { name:"Balustrade", basePrice:150, glassShapes:{ dreapta:{name:"Sticlă Dreaptă",desc:"Panou drept standard",taxaForma:0}, forma:{name:"Sticlă Formă (rampă)",desc:"Tăiat pe unghi / curbă",taxaForma:45} }, hardwareTypes:{ butoni:{name:"Cu Butoni Inox",pricePerMeter:155,desc:"Puncte de fixare, design minimalist"}, "mini-montanti":{name:"Cu Mini-Montanți",pricePerMeter:195,desc:"Montanți intermediari inox"}, "profil-pardoseala":{name:"Profil Pardoseală",pricePerMeter:1220,desc:"Canal integrat în pardoseală"} }, profileShapes:{ U:{name:"Formă U",pricePerMeter:0}, Y:{name:"Formă Y",pricePerMeter:10}, L:{name:"Formă L",pricePerMeter:10} }, glassTypes:{ "662mm":{name:"Sticlă Securizată/Laminată 662 (13mm)",pricePerSqm:150,desc:"Laminat 66.2, ideal interior"}, "882mm":{name:"Sticlă Securizată/Laminată 882 (17mm)",pricePerSqm:200,desc:"Standard exterior"} }, options:{ handrail:{name:"Mână Curentă Inox",pricePerMeter:45,desc:"Rotundă Ø42mm, satinat"}, "handrail-slim":{name:"Mână Curentă Slim",pricePerMeter:85,desc:"Profil plat 40x10mm"}, led:{name:"Iluminare LED",price:150,desc:"Bandă LED 3000K"} } };
 
-const PROFIL_IMAGES = { U: "/profil-u.png", V: "/profil-y.png", L: "/profil-l.png" };
+const PROFIL_IMAGES = { U: "/profil-u.png", Y: "/profil-y.png", L: "/profil-l.png" };
 
 export default function BalustradeConfiguratorPage() {
   const [product, setProduct] = useState(null);
@@ -33,34 +33,44 @@ export default function BalustradeConfiguratorPage() {
   }, []);
 
   const p = product;
-  const showProfileShape = hardware === "profil" || hardware === "profil-pardoseala";
+  const showProfileShape = hardware === "profil-pardoseala";
   const isValid = dims.length && parseFloat(dims.length) > 0;
 
   const skirt = hardware === "butoni" ? 0.35
-    : (hardware === "profil" && profileShape === "V") ? 0.10
+    : (hardware === "profil-pardoseala" && profileShape === "Y") ? 0.10
     : 0;
-  const panelCount = Math.ceil((parseFloat(dims.length) || 0) / 1.1);
-    const calculate = async () => {
-      if (!p) return;
-      setCalculating(true);
-      await new Promise(r => setTimeout(r, 600));
-      const len = parseFloat(dims.length) || 0;
-      const h   = parseFloat(dims.height) || 0;
-      // La sticla forma, se plateste dreptunghiul intreg (inaltimea maxima)
-      // inaltimea maxima = h + stepH * panelCount unde stepH = h * 0.35
-      const panelCount = Math.ceil(len / 1.1);
-      const stepH = h * 0.35;
-      const heightMax = glassShape === "forma" ? h + stepH : h;
-      const area = len * heightMax + (skirt > 0 ? len * skirt : 0);
+
+  const calculate = async () => {
+    if (!p) return;
+    setCalculating(true);
+    await new Promise(r => setTimeout(r, 600));
+    const len = parseFloat(dims.length) || 0;
+    const h   = parseFloat(dims.height) || 0;
+    const panelCount = Math.ceil(len / 1.1);
+
+    // Suprafata se calculeaza pe inaltimea sticlei + fusta (daca e cazul)
+    // La forma, suprafata e aceeasi ca la dreapta (dreptunghiul din care se taie)
+    // diferenta e doar taxa de forma per panou
+    const area = len * (h + skirt);
+
     const hwPrice    = len * (p.hardwareTypes[hardware]?.pricePerMeter || 0);
     const profExtra  = showProfileShape ? len * (p.profileShapes[profileShape]?.pricePerMeter || 0) : 0;
     const glassPrice = area * (p.glassTypes[glassType]?.pricePerSqm || 0);
-    const taxaForma = glassShape === "forma" ? (p.glassShapes.forma?.taxaForma || 0) * panelCount : 0;
+    const taxaForma  = glassShape === "forma" ? (p.glassShapes.forma?.taxaForma || 0) * panelCount : 0;
     const handrailP  = handrail !== "none" ? len * (p.options[handrail]?.pricePerMeter || 0) : 0;
     const ledP       = includeLed ? (p.options.led?.price || 0) : 0;
+
     const raw = p.basePrice + hwPrice + profExtra + glassPrice + taxaForma + handrailP + ledP;
     const { subtotal, vat, total } = calcQuote(raw, vatRate);
-    setQuote({ area:area.toFixed(2), hwPrice:Math.round(hwPrice+profExtra), glassPrice:Math.round(glassPrice), taxaForma:Math.round(taxaForma), handrailP:Math.round(handrailP), ledP, subtotal, vat, total });
+    setQuote({
+      area: area.toFixed(2),
+      hwPrice: Math.round(hwPrice + profExtra),
+      glassPrice: Math.round(glassPrice),
+      taxaForma: Math.round(taxaForma),
+      handrailP: Math.round(handrailP),
+      ledP,
+      subtotal, vat, total
+    });
     setCalculating(false);
   };
 
@@ -92,6 +102,11 @@ export default function BalustradeConfiguratorPage() {
                 <OptionBtn key={k} selected={glassShape===k} onClick={() => setGlassShape(k)} label={d.name} desc={d.desc} />
               ))}
             </div>
+            {glassShape === "forma" && p.glassShapes.forma?.taxaForma > 0 && (
+              <div style={{ marginTop:10, padding:"10px 14px", borderRadius:10, background:"rgba(200,169,110,0.08)", border:"1px solid rgba(200,169,110,0.2)", fontSize:"0.8rem", color:"rgba(240,237,232,0.6)" }}>
+                Include taxă de formă: <strong style={{ color:"#c8a96e" }}>{p.glassShapes.forma.taxaForma}€/panou</strong> pentru tăierea pe unghi.
+              </div>
+            )}
           </SectionCard>
 
           <SectionCard num="03" label="Feronerie / Sistem Prindere">
@@ -107,7 +122,6 @@ export default function BalustradeConfiguratorPage() {
                       label={d.name} price={d.pricePerMeter > 0 ? `+${d.pricePerMeter}€/m` : "Inclus"} center />
                   ))}
                 </div>
-                {/* Imagine detaliu profil */}
                 <div style={{ marginTop:16, borderRadius:12, overflow:"hidden", border:"1px solid rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.02)" }}>
                   <div style={{ fontSize:"0.72rem", color:"rgba(240,237,232,0.35)", padding:"10px 14px", borderBottom:"1px solid rgba(255,255,255,0.06)", letterSpacing:"0.08em", textTransform:"uppercase" }}>
                     Detaliu secțiune · Profil {profileShape}
@@ -160,9 +174,9 @@ export default function BalustradeConfiguratorPage() {
               { label:"Suprafață", value:`${quote.area} m²` },
               { label:"Feronerie", value:`${quote.hwPrice}€` },
               { label:"Sticlă",   value:`${quote.glassPrice}€` },
-              quote.handrailP > 0 && { label:"Mână curentă", value:`+${quote.handrailP}€`, accent:true },
-              quote.ledP > 0      && { label:"LED",           value:`+${quote.ledP}€`,      accent:true },
-              quote.taxaForma > 0 && { label:"Taxă formă", value:`+${quote.taxaForma}€`, accent:true },
+              quote.taxaForma > 0 && { label:"Taxă formă",    value:`+${quote.taxaForma}€`, accent:true },
+              quote.handrailP > 0 && { label:"Mână curentă",  value:`+${quote.handrailP}€`, accent:true },
+              quote.ledP > 0      && { label:"LED",            value:`+${quote.ledP}€`,      accent:true },
             ] : []}
           />
         </div>
