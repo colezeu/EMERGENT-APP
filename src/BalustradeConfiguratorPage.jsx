@@ -40,20 +40,18 @@ export default function BalustradeConfiguratorPage() {
     : (hardware === "profil" && profileShape === "V") ? 0.10
     : 0;
   const panelCount = Math.ceil((parseFloat(dims.length) || 0) / 1.1);
-  const calculate = async () => {
-    if (!p) return;
-    setCalculating(true);
-    await new Promise(r => setTimeout(r, 600));
-    const len = parseFloat(dims.length) || 0;
-    const h   = parseFloat(dims.height) || 0;
-    // La sticla forma, se plateste dreptunghiul intreg (inaltimea maxima)
-    // inaltimea maxima = h + stepH * panelCount unde stepH = h * 0.35
-    const panelCount = Math.ceil(len / 1.1);
-    const stepH = h * 0.35;
-    const areaRect = glassShape === "forma"
-      ? len * (h + stepH * panelCount + skirt)  // dreptunghi maxim
-      : len * (h + skirt);                        // suprafata reala
-    const area = areaRect;
+    const calculate = async () => {
+      if (!p) return;
+      setCalculating(true);
+      await new Promise(r => setTimeout(r, 600));
+      const len = parseFloat(dims.length) || 0;
+      const h   = parseFloat(dims.height) || 0;
+      // La sticla forma, se plateste dreptunghiul intreg (inaltimea maxima)
+      // inaltimea maxima = h + stepH * panelCount unde stepH = h * 0.35
+      const panelCount = Math.ceil(len / 1.1);
+      const stepH = h * 0.35;
+      const heightMax = glassShape === "forma" ? h + stepH : h;
+      const area = len * (heightMax + skirt);
     const hwPrice    = len * (p.hardwareTypes[hardware]?.pricePerMeter || 0);
     const profExtra  = showProfileShape ? len * (p.profileShapes[profileShape]?.pricePerMeter || 0) : 0;
     const glassPrice = area * (p.glassTypes[glassType]?.pricePerSqm || 0);
