@@ -51,7 +51,7 @@ export default function BalustradeConfiguratorPage() {
       const panelCount = Math.ceil(len / 1.1);
       const stepH = h * 0.35;
       const heightMax = glassShape === "forma" ? h + stepH : h;
-      const area = len * (heightMax + skirt);
+      const area = len * heightMax + (skirt > 0 ? len * skirt : 0);
     const hwPrice    = len * (p.hardwareTypes[hardware]?.pricePerMeter || 0);
     const profExtra  = showProfileShape ? len * (p.profileShapes[profileShape]?.pricePerMeter || 0) : 0;
     const glassPrice = area * (p.glassTypes[glassType]?.pricePerSqm || 0);
