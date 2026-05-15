@@ -52,16 +52,26 @@
         }
       },
       "options": {
-        "handrail": {
-          "name": "Mână Curentă Inox",
-          "pricePerMeter": 16,
-          "desc": "Rotunjită Ø42mm, (structurală)"
-        },
-        "handrail-slim": {
-          "name": "Mână Curentă Slim",
-          "pricePerMeter": 5,
-          "desc": "Profil plat, aspect minimalist"
-        },
+        "handrail-structurala": {
+  "name": "Mână Curentă Structurală Aluminiu",
+  "pricePerMeter": 85,
+  "desc": "Profil aluminiu structural, rezistență maximă"
+},
+"handrail-rotunda": {
+  "name": "Mână Curentă Rotundă Inox",
+  "pricePerMeter": 45,
+  "desc": "Rotundă Ø42.4mm, șlefuită satinat"
+},
+"handrail-patrata": {
+  "name": "Mână Curentă Pătrată Inox",
+  "pricePerMeter": 55,
+  "desc": "Profil pătrat 40x40mm, aspect modern"
+},
+"handrail-slim": {
+  "name": "Mână Curentă Slim Aluminiu",
+  "pricePerMeter": 65,
+  "desc": "Profil slim 18x12mm, design minimalist"
+}
         "led": {
           "name": "Iluminare LED Integrată",
           "price": 250,
