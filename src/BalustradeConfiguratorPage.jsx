@@ -148,17 +148,30 @@ export default function BalustradeConfiguratorPage() {
             ))}
           </SectionCard>
 
-          <SectionCard num="05" label="Accesorii (opționale)">
-            {[
-              { key:"none",          label:"Fără mână curentă",             desc:"",                              price:"—" },
-              { key:"handrail",      label:p.options.handrail.name,         desc:p.options.handrail.desc,         price:`${p.options.handrail.pricePerMeter}€/m` },
-              { key:"handrail-slim", label:p.options["handrail-slim"].name, desc:p.options["handrail-slim"].desc, price:`${p.options["handrail-slim"].pricePerMeter}€/m` },
-            ].map(o => (
-              <OptionBtn key={o.key} selected={handrail===o.key} onClick={() => setHandrail(o.key)} label={o.label} desc={o.desc} price={o.price} />
-            ))}
-            <ToggleOption checked={includeLed} onChange={setIncludeLed}
-              label={p.options.led.name} desc={p.options.led.desc} price={`${p.options.led.price}€`} />
-          </SectionCard>
+          <SectionCard num="05" label="Mână Curentă (opțional)">
+  {[
+    { key:"none", label:"Fără mână curentă", desc:"", price:"—" },
+    ...Object.entries(p.options)
+      .filter(([k]) => k.startsWith("handrail"))
+      .map(([k,d]) => ({ key:k, label:d.name, desc:d.desc, price:`${d.pricePerMeter}€/m` }))
+  ].map(o => (
+    <OptionBtn key={o.key} selected={handrail===o.key} onClick={() => setHandrail(o.key)} label={o.label} desc={o.desc} price={o.price} />
+  ))}
+  {handrail !== "none" && MC_IMAGES[handrail] && (
+    <div style={{ marginTop:16, borderRadius:12, overflow:"hidden", border:"1px solid rgba(255,255,255,0.08)", background:"rgba(255,255,255,0.02)" }}>
+      <div style={{ fontSize:"0.72rem", color:"rgba(240,237,232,0.35)", padding:"10px 14px", borderBottom:"1px solid rgba(255,255,255,0.06)", letterSpacing:"0.08em", textTransform:"uppercase" }}>
+        Detaliu secțiune · {p.options[handrail]?.name}
+      </div>
+      <img
+        src={MC_IMAGES[handrail]}
+        alt={handrail}
+        style={{ width:"100%", display:"block", maxHeight:220, objectFit:"contain", padding:"16px", filter:"invert(0.88) brightness(0.85)" }}
+      />
+    </div>
+  )}
+  <ToggleOption checked={includeLed} onChange={setIncludeLed}
+    label={p.options.led.name} desc={p.options.led.desc} price={`${p.options.led.price}€`} />
+</SectionCard>
         </div>
 
         <div style={{ display:"flex", flexDirection:"column", gap:20 }}>
