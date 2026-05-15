@@ -6,6 +6,12 @@ import BalustradePreview3D from "./BalustradePreview2D.jsx";
 const FALLBACK = { name:"Balustrade", basePrice:150, glassShapes:{ dreapta:{name:"Sticlă Dreaptă",desc:"Panou drept standard",taxaForma:0}, forma:{name:"Sticlă Formă (rampă)",desc:"Tăiat pe unghi / curbă",taxaForma:45} }, hardwareTypes:{ butoni:{name:"Cu Butoni Inox",pricePerMeter:155,desc:"Puncte de fixare, design minimalist"}, "mini-montanti":{name:"Cu Mini-Montanți",pricePerMeter:195,desc:"Montanți intermediari inox"}, "profil-pardoseala":{name:"Profil Pardoseală",pricePerMeter:1220,desc:"Canal integrat în pardoseală"} }, profileShapes:{ U:{name:"Formă U",pricePerMeter:0}, Y:{name:"Formă Y",pricePerMeter:10}, L:{name:"Formă L",pricePerMeter:10} }, glassTypes:{ "662mm":{name:"Sticlă Securizată/Laminată 662 (13mm)",pricePerSqm:150,desc:"Laminat 66.2, ideal interior"}, "882mm":{name:"Sticlă Securizată/Laminată 882 (17mm)",pricePerSqm:200,desc:"Standard exterior"} }, options:{ handrail:{name:"Mână Curentă Inox",pricePerMeter:45,desc:"Rotundă Ø42mm, satinat"}, "handrail-slim":{name:"Mână Curentă Slim",pricePerMeter:85,desc:"Profil plat 40x10mm"}, led:{name:"Iluminare LED",price:150,desc:"Bandă LED 3000K"} } };
 
 const PROFIL_IMAGES = { U: "/profil-u.png", Y: "/profil-y.png", L: "/profil-l.png" };
+const MC_IMAGES = {
+  "handrail-structurala": "/mc-structurala.png",
+  "handrail-rotunda":     "/mc-rotunda.png",
+  "handrail-patrata":     "/mc-patrata.png",
+  "handrail-slim":        "/mc-slim.png",
+};
 
 export default function BalustradeConfiguratorPage() {
   const [product, setProduct] = useState(null);
