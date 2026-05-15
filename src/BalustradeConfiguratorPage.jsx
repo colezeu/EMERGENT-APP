@@ -194,7 +194,7 @@ export default function BalustradeConfiguratorPage() {
               { label:"Feronerie", value:`${quote.hwPrice}€` },
               { label:"Sticlă",   value:`${quote.glassPrice}€` },
               quote.taxaForma > 0 && { label:"Taxă formă",    value:`+${quote.taxaForma}€`, accent:true },
-              quote.handrailP > 0 && { label:"Mână curentă",  value:`+${quote.handrailP}€`, accent:true },
+              quote.handrailP > 0 && { label: handrail !== "none" ? p?.options[handrail]?.name || "Mână curentă" : "Mână curentă", value:`+${quote.handrailP}€`, accent:true },
               quote.ledP > 0      && { label:"LED",            value:`+${quote.ledP}€`,      accent:true },
             ] : []}
           />
